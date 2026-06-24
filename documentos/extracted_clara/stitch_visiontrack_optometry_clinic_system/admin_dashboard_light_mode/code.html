@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VisionTrack Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#e5eeff",
+                        "secondary-fixed": "#6ffbbe",
+                        "primary": "#4648d4",
+                        "outline": "#767586",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f8f9ff",
+                        "surface": "#f8f9ff",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "on-background": "#0b1c30",
+                        "background": "#f8f9ff",
+                        "outline-variant": "#c7c4d7",
+                        "tertiary-fixed": "#ffdcc5",
+                        "on-surface-variant": "#464554",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "error": "#ba1a1a",
+                        "secondary": "#006c49",
+                        "on-secondary-fixed": "#002113",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#b55d00",
+                        "inverse-primary": "#c0c1ff",
+                        "on-secondary-fixed-variant": "#005236",
+                        "tertiary": "#904900",
+                        "primary-container": "#6063ee",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#e1e0ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "inverse-surface": "#213145",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#494bd6",
+                        "secondary-container": "#6cf8bb",
+                        "on-primary-container": "#fffbff",
+                        "on-tertiary-fixed": "#301400",
+                        "on-secondary-container": "#00714d",
+                        "surface-container-low": "#eff4ff",
+                        "on-surface": "#0b1c30",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-fixed-dim": "#ffb783"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "container-max": "1440px",
+                        "margin-desktop": "32px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9ff; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .chart-bar-hover:hover { opacity: 0.8; }
+        .thin-scrollbar::-webkit-scrollbar { width: 4px; }
+        .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .thin-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col h-full py-lg bg-surface border-r border-outline-variant z-50">
+<div class="px-lg mb-xl">
+<h1 class="font-title-md text-title-md font-bold text-primary">VisionTrack</h1>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Optometry Admin</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center px-lg py-sm transition-colors duration-200 text-primary font-bold border-r-2 border-primary bg-surface-container-low" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center px-lg py-sm transition-colors duration-200 text-on-surface-variant hover:bg-surface-variant/30" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Patients</span>
+</a>
+<a class="flex items-center px-lg py-sm transition-colors duration-200 text-on-surface-variant hover:bg-surface-variant/30" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Appointments</span>
+</a>
+<a class="flex items-center px-lg py-sm transition-colors duration-200 text-on-surface-variant hover:bg-surface-variant/30" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="biotech">biotech</span>
+<span class="font-label-md text-label-md">Diagnostics</span>
+</a>
+<a class="flex items-center px-lg py-sm transition-colors duration-200 text-on-surface-variant hover:bg-surface-variant/30" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Inventory</span>
+</a>
+<a class="flex items-center px-lg py-sm transition-colors duration-200 text-on-surface-variant hover:bg-surface-variant/30" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-lg pt-lg border-t border-outline-variant">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a female medical administrator in a bright, modern office setting. She has a friendly, authoritative expression, wearing professional attire. The lighting is soft and clinical, consistent with a high-end optometry clinic's brand identity. Soft blue and white background tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArRnDJ9TtlLy6B3QCXnuzDtcVKrf4SPmOAREvtyXfUYBBef8UAGB0ojc4GVvo98UWUdQViWZtZ7fz4wk_nsszhmYsqQsobVcJdxuytb7enebY4Mq79-ywQ0ccFOJHBDtaME1OanlLP_jNziC1yKDkbelneAfvygmjftaJcT6ksNrqk2rJscMZd4uyzuVFItvHzHwn0Dmx2Ne27HfxvM3Saxv5CJ4wwPoazbvq6TvmXOFaZyvXX2cDs7IVET2bNLg4Jc1ASxUiwJF6F"/>
+</div>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">VisionTrack Admin</p>
+<p class="text-[10px] text-on-surface-variant">System Lead</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar Anchor -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 flex justify-between items-center px-lg ml-64 bg-surface border-b border-outline-variant z-40">
+<div class="flex items-center w-1/3">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded py-2 pl-10 pr-4 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Search patients, records, or scans..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<button class="relative text-on-surface-variant hover:text-primary transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<button class="flex items-center gap-sm font-label-md text-label-md text-on-surface hover:text-primary transition-all">
+                Profile
+                <span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen">
+<div class="max-w-[1440px] mx-auto p-lg">
+<!-- 1. Clinical Overview Header -->
+<section class="mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-on-background">Clinical Overview</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Real-time status of diagnostic throughput and patient volume.</p>
+</section>
+<!-- Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- 2. KPI Cards -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-gutter">
+<!-- Active Patients -->
+<div class="bg-white border border-outline-variant p-lg rounded-xl shadow-sm hover:border-primary/30 transition-all group">
+<div class="flex justify-between items-start mb-md">
+<div class="bg-surface-container-low p-sm rounded-lg text-primary">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+</div>
+<div class="flex items-center text-secondary font-bold text-label-md">
+<span class="material-symbols-outlined text-[16px] mr-1" data-icon="trending_up">trending_up</span>
+                                12%
+                            </div>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-xs">Active Patients</p>
+<h3 class="text-[32px] font-bold text-on-surface">1,284</h3>
+</div>
+<!-- Pending Scans -->
+<div class="bg-white border border-outline-variant p-lg rounded-xl shadow-sm hover:border-primary/30 transition-all">
+<div class="flex justify-between items-start mb-md">
+<div class="bg-surface-container-low p-sm rounded-lg text-tertiary">
+<span class="material-symbols-outlined" data-icon="hourglass_empty">hourglass_empty</span>
+</div>
+<div class="text-on-surface-variant font-label-md text-label-md">Avg 14m</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-xs">Pending Scans</p>
+<h3 class="text-[32px] font-bold text-on-surface">42</h3>
+</div>
+</div>
+<!-- 3. Diagnostic Precision Chart -->
+<div class="col-span-12 lg:col-span-6 bg-white border border-outline-variant p-lg rounded-xl shadow-sm">
+<div class="flex justify-between items-center mb-xl">
+<h4 class="font-title-md text-title-md text-on-surface">Diagnostic Precision</h4>
+<div class="flex gap-sm">
+<div class="flex items-center gap-xs font-label-md text-label-md text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-primary/40"></span> Average
+                            </div>
+<div class="flex items-center gap-xs font-label-md text-label-md text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-primary"></span> Peak
+                            </div>
+</div>
+</div>
+<div class="h-48 flex items-end justify-between gap-md relative">
+<!-- Monday -->
+<div class="flex-1 flex flex-col items-center gap-sm h-full justify-end group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[40%] transition-all group-hover:bg-primary/30"></div>
+<span class="font-label-md text-[10px] text-on-surface-variant">MON</span>
+</div>
+<!-- Tuesday -->
+<div class="flex-1 flex flex-col items-center gap-sm h-full justify-end group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[55%] transition-all group-hover:bg-primary/30"></div>
+<span class="font-label-md text-[10px] text-on-surface-variant">TUE</span>
+</div>
+<!-- Wednesday -->
+<div class="flex-1 flex flex-col items-center gap-sm h-full justify-end group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[75%] transition-all group-hover:bg-primary/30"></div>
+<span class="font-label-md text-[10px] text-on-surface-variant">WED</span>
+</div>
+<!-- Thursday (Highlighted) -->
+<div class="flex-1 flex flex-col items-center gap-sm h-full justify-end group relative">
+<div class="absolute -top-10 bg-primary text-white text-[10px] py-1 px-2 rounded-full font-bold opacity-0 group-hover:opacity-100 transition-opacity">98.4%</div>
+<div class="w-full bg-gradient-to-t from-primary to-primary-container rounded-t-lg h-[95%] shadow-md shadow-primary/20"></div>
+<span class="font-label-md text-[10px] text-primary font-bold">THU</span>
+</div>
+<!-- Friday -->
+<div class="flex-1 flex flex-col items-center gap-sm h-full justify-end group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[65%] transition-all group-hover:bg-primary/30"></div>
+<span class="font-label-md text-[10px] text-on-surface-variant">FRI</span>
+</div>
+<!-- Saturday -->
+<div class="flex-1 flex flex-col items-center gap-sm h-full justify-end group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[30%] transition-all group-hover:bg-primary/30"></div>
+<span class="font-label-md text-[10px] text-on-surface-variant">SAT</span>
+</div>
+<!-- Sunday -->
+<div class="flex-1 flex flex-col items-center gap-sm h-full justify-end group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[25%] transition-all group-hover:bg-primary/30"></div>
+<span class="font-label-md text-[10px] text-on-surface-variant">SUN</span>
+</div>
+</div>
+</div>
+<!-- 4. Quick Links Section -->
+<div class="col-span-12 lg:col-span-3 bg-white border border-outline-variant p-lg rounded-xl shadow-sm">
+<h4 class="font-title-md text-title-md text-on-surface mb-lg">Quick Actions</h4>
+<ul class="space-y-sm">
+<li>
+<a class="flex items-center gap-md p-md rounded-lg hover:bg-surface-container-low transition-colors group" href="#">
+<div class="bg-secondary/10 p-sm rounded-lg text-secondary group-hover:bg-secondary group-hover:text-white transition-all">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Daily Report</p>
+<p class="text-[10px] text-on-surface-variant">Generated 2h ago</p>
+</div>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-md rounded-lg hover:bg-surface-container-low transition-colors group" href="#">
+<div class="bg-primary/10 p-sm rounded-lg text-primary group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Patient Records</p>
+<p class="text-[10px] text-on-surface-variant">Access cloud storage</p>
+</div>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-md rounded-lg hover:bg-surface-container-low transition-colors group" href="#">
+<div class="bg-tertiary/10 p-sm rounded-lg text-tertiary group-hover:bg-tertiary group-hover:text-white transition-all">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Staff Schedule</p>
+<p class="text-[10px] text-on-surface-variant">Shift management</p>
+</div>
+</a>
+</li>
+</ul>
+</div>
+<!-- 5. Upcoming Appointments Table -->
+<div class="col-span-12 bg-white border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low/30">
+<h4 class="font-title-md text-title-md text-on-surface">Upcoming Appointments</h4>
+<button class="text-primary font-label-md text-label-md hover:underline">View All Schedule</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">
+<tr>
+<th class="px-lg py-md font-semibold">Patient</th>
+<th class="px-lg py-md font-semibold">Appointment ID</th>
+<th class="px-lg py-md font-semibold">Time</th>
+<th class="px-lg py-md font-semibold">Diagnostic Type</th>
+<th class="px-lg py-md font-semibold">Status</th>
+<th class="px-lg py-md font-semibold">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">JD</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Jameson Dillinger</p>
+<p class="text-[10px] text-on-surface-variant">Male, 42</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md font-label-md text-label-md text-on-surface">VT-20934</td>
+<td class="px-lg py-md font-label-md text-label-md text-on-surface">10:30 AM</td>
+<td class="px-lg py-md font-label-md text-label-md text-on-surface">Retinal Mapping</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-secondary/10 text-secondary font-bold text-[10px]">CONFIRMED</span>
+</td>
+<td class="px-lg py-md">
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors" data-icon="more_horiz">more_horiz</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-sm">MK</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Mila Kunis</p>
+<p class="text-[10px] text-on-surface-variant">Female, 38</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md font-label-md text-label-md text-on-surface">VT-20935</td>
+<td class="px-lg py-md font-label-md text-label-md text-on-surface">11:15 AM</td>
+<td class="px-lg py-md font-label-md text-label-md text-on-surface">Visual Acuity Chart</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-primary/10 text-primary font-bold text-[10px]">IN-REVIEW</span>
+</td>
+<td class="px-lg py-md">
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors" data-icon="more_horiz">more_horiz</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-bold text-sm">ST</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Sam Thorne</p>
+<p class="text-[10px] text-on-surface-variant">Male, 56</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md font-label-md text-label-md text-on-surface">VT-20936</td>
+<td class="px-lg py-md font-label-md text-label-md text-on-surface">01:45 PM</td>
+<td class="px-lg py-md font-label-md text-label-md text-on-surface">Corneal Topography</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-tertiary/10 text-tertiary font-bold text-[10px]">PENDING</span>
+</td>
+<td class="px-lg py-md">
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors" data-icon="more_horiz">more_horiz</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Bento Area: Data & System Health -->
+<div class="grid grid-cols-12 gap-gutter mt-gutter">
+<div class="col-span-12 md:col-span-8 bg-surface-container-low rounded-xl p-lg flex flex-col gap-md">
+<div class="flex justify-between items-center">
+<h4 class="font-title-md text-title-md text-on-surface">System Performance Analytics</h4>
+<div class="flex gap-sm">
+<button class="px-4 py-1 bg-white border border-outline-variant rounded-full text-[10px] font-bold text-on-surface-variant">Last 24h</button>
+<button class="px-4 py-1 bg-primary text-white rounded-full text-[10px] font-bold">Week</button>
+</div>
+</div>
+<div class="flex-1 bg-white rounded-lg border border-outline-variant relative overflow-hidden flex items-center justify-center">
+<!-- Abstract Vitals Monitor Placeholder -->
+<div class="absolute inset-0 opacity-10">
+<div class="w-full h-full" style="background-image: radial-gradient(#4648d4 1px, transparent 1px); background-size: 20px 20px;"></div>
+</div>
+<div class="relative w-full h-32 px-xl">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 400 100">
+<path class="opacity-30" d="M0,50 Q50,20 100,50 T200,50 T300,50 T400,30" fill="none" stroke="#4648d4" stroke-width="2"></path>
+<path class="opacity-30" d="M0,60 Q60,30 120,60 T240,60 T360,60 T480,40" fill="none" stroke="#006c49" stroke-width="2"></path>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<p class="text-on-surface-variant font-label-md text-label-md italic">Real-time throughput metrics currently syncing...</p>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 grid grid-rows-2 gap-gutter">
+<div class="bg-primary p-lg rounded-xl text-white shadow-lg shadow-primary/20 flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-white/60 mb-sm" data-icon="cloud_done">cloud_done</span>
+<p class="font-label-md text-label-md opacity-80 uppercase tracking-widest">Backup Status</p>
+<h4 class="font-title-md text-title-md">Systems Secure</h4>
+</div>
+<p class="text-[10px] opacity-70">Last encrypted backup: 12 minutes ago</p>
+</div>
+<div class="bg-secondary p-lg rounded-xl text-white shadow-lg shadow-secondary/20 flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-white/60 mb-sm" data-icon="speed">speed</span>
+<p class="font-label-md text-label-md opacity-80 uppercase tracking-widest">Processing Speed</p>
+<h4 class="font-title-md text-title-md">1.2ms Latency</h4>
+</div>
+<p class="text-[10px] opacity-70">Optimal diagnostic cloud sync</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple micro-interaction for the search bar
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-[1.02]');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-[1.02]');
+        });
+    </script>
+</body></html>

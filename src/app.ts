@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import generoRoutes from "./routes/usuarios/generoRoutes";
 import personaRoutes from "./routes/usuarios/personaRoutes";
 import usuarioRoutes from "./routes/usuarios/usuarioRoutes";
+import authRoutes from "./routes/authRoutes";
 // Gestión de Roles y Permisos
 import menuRoutes from "./routes/rolesPermisos/menuRoutes";
 import rolRoutes from "./routes/rolesPermisos/rolRoutes";
@@ -40,6 +41,7 @@ app.get("/", (req, res) => {
 app.use("/api/generos", generoRoutes);
 app.use("/api/personas", personaRoutes);
 app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/auth", authRoutes);
 // Gestión de Roles y Permisos
 app.use("/api/menus", menuRoutes);
 app.use("/api/roles", rolRoutes);
