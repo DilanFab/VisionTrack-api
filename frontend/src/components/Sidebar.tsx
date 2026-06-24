@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import logoImg from "../assets/logo.svg";
 
 export const Sidebar: React.FC = () => {
   const { logout } = useAuth();
@@ -10,10 +11,8 @@ export const Sidebar: React.FC = () => {
       {/* Header */}
       <div className="px-8 mb-10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
-            <span className="material-symbols-outlined text-on-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>
-              visibility
-            </span>
+          <div className="w-10 h-10 flex items-center justify-center">
+            <img src={logoImg} alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="font-headline-md text-[20px] font-bold text-primary tracking-tight">VisionTrack</h1>

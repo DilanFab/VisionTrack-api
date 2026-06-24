@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import logoImg from "../assets/logo.svg"; // Cambia a .png si convertiste a PNG
+
 
 const Login: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
@@ -109,13 +111,8 @@ const Login: React.FC = () => {
 
           {/* Header Section */}
           <header className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-5 border border-primary/20 shadow-inner">
-              <span 
-                className="material-symbols-outlined text-primary text-4xl" 
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                visibility
-              </span>
+            <div className="inline-flex items-center justify-center mb-5">
+              <img src={logoImg} alt="VisionTrack Logo" className="h-16 w-auto object-contain" />
             </div>
             <h1 className="font-bold text-4xl text-primary tracking-tight">VisionTrack</h1>
             <p className="text-sm font-medium text-on-surface-variant mt-2 tracking-wide uppercase opacity-85">

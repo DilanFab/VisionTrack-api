@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import api from "../api/axios";
+import logoImg from "../assets/logo.svg";
 
 interface Genero {
   genero_id: number;
@@ -186,6 +187,9 @@ const Register: React.FC = () => {
 
           {/* Header */}
           <header className="text-center mb-6">
+            <div className="inline-flex items-center justify-center mb-4 mx-auto">
+              <img src={logoImg} alt="VisionTrack Logo" className="h-14 w-auto object-contain" />
+            </div>
             <h1 className="font-bold text-3xl text-primary tracking-tight">VisionTrack</h1>
             <p className="text-xs font-semibold text-on-surface-variant mt-1.5 uppercase tracking-widest opacity-80">
               Crear Nueva Cuenta de Usuario
