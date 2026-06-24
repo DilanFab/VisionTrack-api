@@ -9,16 +9,8 @@ export const Sidebar: React.FC = () => {
   return (
     <aside className="w-[280px] h-screen fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col py-8 z-50 sidebar-transition hidden md:flex" id="sidebar">
       {/* Header */}
-      <div className="px-8 mb-10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 flex items-center justify-center">
-            <img src={logoImg} alt="Logo" className="w-full h-full object-contain" />
-          </div>
-          <div>
-            <h1 className="font-headline-md text-[20px] font-bold text-primary tracking-tight">VisionTrack</h1>
-            <p className="text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider">Admin Portal</p>
-          </div>
-        </div>
+      <div className="px-8 mb-10 flex justify-center">
+        <img src={logoImg} alt="VisionTrack Logo" className="h-12 w-auto object-contain" />
       </div>
 
       {/* Navigation Tabs */}

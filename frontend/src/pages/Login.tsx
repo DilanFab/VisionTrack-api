@@ -112,10 +112,10 @@ const Login: React.FC = () => {
           {/* Header Section */}
           <header className="text-center mb-8">
             <div className="inline-flex items-center justify-center mb-5">
-              <img src={logoImg} alt="VisionTrack Logo" className="h-16 w-auto object-contain" />
+              <img src={logoImg} alt="VisionTrack Logo" className="h-26 w-auto object-contain" />
             </div>
-            <h1 className="font-bold text-4xl text-primary tracking-tight">VisionTrack</h1>
-            <p className="text-sm font-medium text-on-surface-variant mt-2 tracking-wide uppercase opacity-85">
+            <h1 className="font-bold text-4xl text-primary tracking-tight"></h1>
+            <p className="text-sm font-medium text-on-surface-variant mt-1 tracking-wide uppercase opacity-85">
               Clinical Precision. Patient Centricity.
             </p>
           </header>
