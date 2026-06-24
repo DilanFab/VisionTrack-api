@@ -34,6 +34,11 @@ function App() {
               <Route path="pacientes" element={<Generos />} />
               {/* Using Generos as placeholders for other sections until pages are built */}
               <Route path="citas" element={<Generos />} />
+
+              {/* Personal (Staff) only for Administrador */}
+              <Route element={<ProtectedRoute allowedRoles={["Administrador"]} />}>
+                <Route path="personal" element={<Generos />} />
+              </Route>
               
               {/* Diagnósticos and Style Guide only for Administrador & Médico */}
               <Route element={<ProtectedRoute allowedRoles={["Administrador", "Médico"]} />}>

@@ -63,6 +63,23 @@ export const Sidebar: React.FC = () => {
           </NavLink>
         )}
 
+        {/* Personal (Staff) - ONLY for Admin */}
+        {hasRole("Administrador") && (
+          <NavLink
+            to="/admin/personal"
+            className={({ isActive }) =>
+              `flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
+                isActive
+                  ? "text-primary font-bold border-r-2 border-primary bg-surface-variant/30"
+                  : "text-on-surface-variant hover:bg-surface-variant"
+              }`
+            }
+          >
+            <span className="material-symbols-outlined">badge</span>
+            <span className="font-medium">Personal (Staff)</span>
+          </NavLink>
+        )}
+
         {/* Diagnósticos (Clinical / Optical data) - ONLY for Admin and Doctor */}
         {(hasRole("Administrador") || hasRole("Médico")) && (
           <NavLink
