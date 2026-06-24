@@ -15,47 +15,53 @@ export const Sidebar: React.FC = () => {
 
       {/* Navigation Tabs */}
       <nav className="flex-grow px-4 space-y-2">
-        <NavLink
-          to="/admin/dashboard"
-          className={({ isActive }) =>
-            `flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
-              isActive
-                ? "text-primary font-bold border-r-2 border-primary bg-surface-variant/30"
-                : "text-on-surface-variant hover:bg-surface-variant"
-            }`
-          }
-        >
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
-          <span className="font-medium">Dashboard</span>
-        </NavLink>
+        {(hasRole("Administrador") || hasRole("Médico") || hasRole("Recepcionista")) && (
+          <NavLink
+            to="/admin/dashboard"
+            className={({ isActive }) =>
+              `flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
+                isActive
+                  ? "text-primary font-bold border-r-2 border-primary bg-surface-variant/30"
+                  : "text-on-surface-variant hover:bg-surface-variant"
+              }`
+            }
+          >
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
+            <span className="font-medium">Dashboard</span>
+          </NavLink>
+        )}
 
-        <NavLink
-          to="/admin/pacientes"
-          className={({ isActive }) =>
-            `flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
-              isActive
-                ? "text-primary font-bold border-r-2 border-primary bg-surface-variant/30"
-                : "text-on-surface-variant hover:bg-surface-variant"
-            }`
-          }
-        >
-          <span className="material-symbols-outlined">group</span>
-          <span className="font-medium">Pacientes</span>
-        </NavLink>
+        {(hasRole("Administrador") || hasRole("Médico") || hasRole("Recepcionista")) && (
+          <NavLink
+            to="/admin/pacientes"
+            className={({ isActive }) =>
+              `flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
+                isActive
+                  ? "text-primary font-bold border-r-2 border-primary bg-surface-variant/30"
+                  : "text-on-surface-variant hover:bg-surface-variant"
+              }`
+            }
+          >
+            <span className="material-symbols-outlined">group</span>
+            <span className="font-medium">Pacientes</span>
+          </NavLink>
+        )}
 
-        <NavLink
-          to="/admin/citas"
-          className={({ isActive }) =>
-            `flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
-              isActive
-                ? "text-primary font-bold border-r-2 border-primary bg-surface-variant/30"
-                : "text-on-surface-variant hover:bg-surface-variant"
-            }`
-          }
-        >
-          <span className="material-symbols-outlined">calendar_today</span>
-          <span className="font-medium">Citas</span>
-        </NavLink>
+        {(hasRole("Administrador") || hasRole("Médico") || hasRole("Recepcionista")) && (
+          <NavLink
+            to="/admin/citas"
+            className={({ isActive }) =>
+              `flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
+                isActive
+                  ? "text-primary font-bold border-r-2 border-primary bg-surface-variant/30"
+                  : "text-on-surface-variant hover:bg-surface-variant"
+              }`
+            }
+          >
+            <span className="material-symbols-outlined">calendar_today</span>
+            <span className="font-medium">Citas</span>
+          </NavLink>
+        )}
 
         {/* Diagnósticos (Clinical / Optical data) - ONLY for Admin and Doctor */}
         {(hasRole("Administrador") || hasRole("Médico")) && (

@@ -6,7 +6,7 @@ import logoImg from "../assets/logo.svg"; // Cambia a .png si convertiste a PNG
 
 
 const Login: React.FC = () => {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -21,10 +21,19 @@ const Login: React.FC = () => {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/admin/dashboard", { replace: true });
+    if (isAuthenticated && user && status === "idle") {
+      const hasAdminAccess = user.roles.some(
+        (r) => r === "Administrador" || r === "Médico" || r === "Recepcionista"
+      );
+      if (hasAdminAccess) {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (user.roles.includes("Paciente")) {
+        navigate("/portal", { replace: true });
+      } else {
+        navigate("/unauthorized", { replace: true });
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, status, navigate]);
 
   // Subtle Mouse parallax/tilt effect for premium feeling
   useEffect(() => {
@@ -60,7 +69,26 @@ const Login: React.FC = () => {
 
       // Small delay for the "Access Granted" animation to complete
       setTimeout(() => {
-        navigate("/admin/dashboard");
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+          try {
+            const parsedUser = JSON.parse(savedUser);
+            const hasAdminAccess = parsedUser.roles.some(
+              (r: string) => r === "Administrador" || r === "Médico" || r === "Recepcionista"
+            );
+            if (hasAdminAccess) {
+              navigate("/admin/dashboard");
+            } else if (parsedUser.roles.includes("Paciente")) {
+              navigate("/portal");
+            } else {
+              navigate("/unauthorized");
+            }
+          } catch (e) {
+            navigate("/admin/dashboard");
+          }
+        } else {
+          navigate("/admin/dashboard");
+        }
       }, 1500);
     } catch (err: any) {
       console.error(err);

@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import UiGuide from "./pages/UiGuide";
 import Dashboard from "./pages/admin/Dashboard";
 import Generos from "./pages/usuarios/Generos";
+import PatientDashboard from "./pages/portal/PatientDashboard";
 
 function App() {
   return (
@@ -21,17 +22,30 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
+          {/* Patient Portal Section */}
+          <Route element={<ProtectedRoute allowedRoles={["Paciente"]} />}>
+            <Route path="/portal" element={<PatientDashboard />} />
+          </Route>
+
           {/* Admin Section routes wrapped under ProtectedRoute and AdminLayout */}
-          <Route element={<ProtectedRoute />}>
+          <Route element={<ProtectedRoute allowedRoles={["Administrador", "Médico", "Recepcionista"]} />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="pacientes" element={<Generos />} />
               {/* Using Generos as placeholders for other sections until pages are built */}
               <Route path="citas" element={<Generos />} />
-              <Route path="historial" element={<Generos />} />
-              <Route path="inventario" element={<Generos />} />
-              <Route path="facturacion" element={<Generos />} />
-              <Route path="ui-guide" element={<UiGuide />} />
+              
+              {/* Diagnósticos and Style Guide only for Administrador & Médico */}
+              <Route element={<ProtectedRoute allowedRoles={["Administrador", "Médico"]} />}>
+                <Route path="historial" element={<Generos />} />
+                <Route path="ui-guide" element={<UiGuide />} />
+              </Route>
+
+              {/* Inventario and Facturación only for Administrador & Recepcionista */}
+              <Route element={<ProtectedRoute allowedRoles={["Administrador", "Recepcionista"]} />}>
+                <Route path="inventario" element={<Generos />} />
+                <Route path="facturacion" element={<Generos />} />
+              </Route>
             </Route>
           </Route>
 

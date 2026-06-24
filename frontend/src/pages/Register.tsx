@@ -17,7 +17,7 @@ interface Especialidad {
 }
 
 const Register: React.FC = () => {
-  const { register, isAuthenticated } = useAuth();
+  const { register, isAuthenticated, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -53,10 +53,19 @@ const Register: React.FC = () => {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/admin/dashboard", { replace: true });
+    if (isAuthenticated && user && status === "idle") {
+      const hasAdminAccess = user.roles.some(
+        (r) => r === "Administrador" || r === "Médico" || r === "Recepcionista"
+      );
+      if (hasAdminAccess) {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (user.roles.includes("Paciente")) {
+        navigate("/portal", { replace: true });
+      } else {
+        navigate("/unauthorized", { replace: true });
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, status, navigate]);
 
   // Load genders and specialties
   useEffect(() => {
@@ -136,7 +145,26 @@ const Register: React.FC = () => {
 
       setStatus("success");
       setTimeout(() => {
-        navigate("/admin/dashboard");
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+          try {
+            const parsedUser = JSON.parse(savedUser);
+            const hasAdminAccess = parsedUser.roles.some(
+              (r: string) => r === "Administrador" || r === "Médico" || r === "Recepcionista"
+            );
+            if (hasAdminAccess) {
+              navigate("/admin/dashboard");
+            } else if (parsedUser.roles.includes("Paciente")) {
+              navigate("/portal");
+            } else {
+              navigate("/unauthorized");
+            }
+          } catch (e) {
+            navigate("/admin/dashboard");
+          }
+        } else {
+          navigate("/admin/dashboard");
+        }
       }, 1500);
     } catch (err: any) {
       console.error(err);
