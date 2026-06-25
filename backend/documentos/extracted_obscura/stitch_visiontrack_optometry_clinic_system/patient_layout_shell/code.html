@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>VisionTrack Patient Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#5516be",
+                    "on-surface": "#dae2fd",
+                    "on-primary-fixed": "#07006c",
+                    "surface-container-low": "#131b2e",
+                    "primary": "#c0c1ff",
+                    "surface": "#0b1326",
+                    "inverse-primary": "#494bd6",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "surface-variant": "#2d3449",
+                    "on-tertiary-fixed": "#23005c",
+                    "primary-container": "#8083ff",
+                    "tertiary-fixed-dim": "#d0bcff",
+                    "primary-fixed": "#e1e0ff",
+                    "on-error": "#690005",
+                    "inverse-on-surface": "#283044",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "tertiary": "#d0bcff",
+                    "surface-bright": "#31394d",
+                    "surface-container-highest": "#2d3449",
+                    "on-primary-container": "#0d0096",
+                    "secondary": "#4edea3",
+                    "on-surface-variant": "#c7c4d7",
+                    "background": "#0b1326",
+                    "on-tertiary": "#3c0091",
+                    "outline": "#908fa0",
+                    "on-secondary-fixed": "#002113",
+                    "on-primary": "#1000a9",
+                    "error-container": "#93000a",
+                    "surface-dim": "#0b1326",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface-container-lowest": "#060e20",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-background": "#dae2fd",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-secondary": "#003824",
+                    "error": "#ffb4ab",
+                    "secondary-container": "#00a572",
+                    "outline-variant": "#464554",
+                    "inverse-surface": "#dae2fd",
+                    "tertiary-fixed": "#e9ddff",
+                    "on-tertiary-container": "#340080",
+                    "tertiary-container": "#a078ff",
+                    "on-error-container": "#ffdad6",
+                    "surface-tint": "#c0c1ff",
+                    "surface-container-high": "#222a3d",
+                    "surface-container": "#171f33",
+                    "on-secondary-container": "#00311f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "40px",
+                    "container-max": "1440px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "margin-mobile": "16px",
+                    "unit": "4px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-md": ["JetBrains Mono"],
+                    "label-sm": ["JetBrains Mono"],
+                    "display-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            backdrop-filter: blur(12px);
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .safe-area-top {
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .clinical-glow {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Custom Scrollbar for high-density feel */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary/30">
+<!-- App Shell Container -->
+<div class="relative min-h-screen flex flex-col">
+<!-- Header (Top Nav Simulation for PWA) -->
+<header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md px-margin-mobile pt-10 pb-4 flex justify-between items-center safe-area-top">
+<div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight">VisionTrack</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Patient Portal</p>
+</div>
+<div class="flex gap-4">
+<button class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full border border-primary/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional close-up studio portrait of a middle-aged patient with a friendly expression. The lighting is soft and clinical, set against a blurred medical office background with deep indigo and cool white tones. High-fidelity photography style with a focus on approachable healthcare aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6e0JHDS4xpMRih9U0SXW_VyGzrrNWwdgJIU90tLQOhkVsqQxoGfXV51YsRn4JyvB15k6a95e0frMYWDF0bMTl1FOsRThpoSSxnm5PwFTXal2kvqfYr_h7lZsz92sHDS8W3hu9u47UBfpqRI2Vv6DoBn3W10b41plqAcw7oOZdK6WBagF9cip2KeUIrxQp7haDZoSvVOEDxJGCgyG55z_Y3uX3etyKSNbJePTZPNJuwXE2zEZK94uF3-9PSE4ye54PLonUU3b9W96T"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow px-margin-mobile pb-32 pt-4">
+<!-- Greeting & Quick Stats -->
+<section class="mb-8">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6">Welcome back, Sarah</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="glass-card p-4 rounded-xl flex flex-col justify-between h-32 clinical-glow">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">visibility</span>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Last Exam</p>
+<p class="font-headline-md text-headline-md text-secondary">20/20 L</p>
+</div>
+</div>
+<div class="glass-card p-4 rounded-xl flex flex-col justify-between h-32">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Next Visit</p>
+<p class="font-headline-md text-headline-md text-primary">Oct 14</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Diagnostic Visualization (Asymmetric/Bento Pattern) -->
+<section class="mb-8">
+<div class="flex justify-between items-end mb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface">Vision Trends</h3>
+<button class="font-label-md text-label-md text-primary">View Report</button>
+</div>
+<div class="glass-card rounded-2xl overflow-hidden mb-4 p-1">
+<div class="bg-surface-container-low rounded-xl h-48 relative flex items-center justify-center">
+<!-- Simulated Data Graph -->
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+
+</div>
+<div class="relative z-10 text-center px-6">
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Acuity Stability Score</p>
+<div class="text-[40px] font-bold text-on-surface tracking-tighter">98.4%</div>
+<p class="font-label-sm text-label-sm text-secondary flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                                Stable since July
+                            </p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div class="glass-card p-5 rounded-2xl flex items-center gap-4 border-l-4 border-l-secondary">
+<div class="bg-secondary/10 p-3 rounded-full">
+<span class="material-symbols-outlined text-secondary">done_all</span>
+</div>
+<div class="flex-grow">
+<h4 class="font-body-md text-body-md font-bold text-on-surface">Daily Eye Exercise</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Completed 5m ago</p>
+</div>
+<div class="text-secondary font-label-md">+12 pts</div>
+</div>
+</div>
+</section>
+<!-- Appointment Card -->
+<section class="mb-8">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4">Upcoming</h3>
+<div class="relative overflow-hidden rounded-2xl bg-primary-container p-6 text-on-primary-container">
+<div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="font-label-sm text-label-sm uppercase tracking-widest opacity-80 mb-1">Annual Retina Scan</p>
+<p class="font-headline-md text-headline-md">Dr. Julian Vance</p>
+</div>
+<div class="bg-on-primary-container text-primary-container px-3 py-1 rounded-full font-label-sm">
+                                Specialist
+                            </div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+<span class="font-body-sm text-body-sm">Mon, Oct 14</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="font-body-sm text-body-sm">09:30 AM</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar (Mandatory Shared Component Implementation) -->
+<!-- Logic: "Home" active for dashboard view -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface/80 backdrop-blur-xl border-t border-white/10 shadow-lg shadow-primary/20 rounded-t-xl" id="bottom-nav">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-1 active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<!-- Appointments -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 active:scale-95 transition-all duration-200 px-4 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span class="font-label-sm text-label-sm">Appointments</span>
+</a>
+<!-- History -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 active:scale-95 transition-all duration-200 px-4 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-label-sm text-label-sm">History</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 active:scale-95 transition-all duration-200 px-4 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<!-- Contextual FAB (Hidden on Profile/Settings as per instructions, visible here for action) -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-xl shadow-primary/40 flex items-center justify-center z-40 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[28px]">add_a_photo</span>
+</button>
+</div>
+<!-- Interaction Script -->
+<script>
+        // Micro-interactions for navigation
+        document.querySelectorAll('#bottom-nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Prevent default for demo
+                e.preventDefault();
+                
+                // Clear active states
+                document.querySelectorAll('#bottom-nav a').forEach(l => {
+                    l.className = "flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 active:scale-95 transition-all duration-200 px-4 py-1";
+                });
+                
+                // Set this as active
+                this.className = "flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-1 active:scale-95 transition-all duration-200";
+            });
+        });
+
+        // Atmospheric parallax on scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const header = document.querySelector('header');
+            if (scrolled > 20) {
+                header.classList.add('shadow-xl', 'shadow-background/50');
+            } else {
+                header.classList.remove('shadow-xl', 'shadow-background/50');
+            }
+        });
+    </script>
+</body></html>

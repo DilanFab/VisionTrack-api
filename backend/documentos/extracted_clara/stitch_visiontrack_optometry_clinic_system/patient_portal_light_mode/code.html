@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient Portal - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#00714d",
+                        "outline-variant": "#c7c4d7",
+                        "on-secondary-fixed-variant": "#005236",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#dce9ff",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "inverse-primary": "#c0c1ff",
+                        "surface-bright": "#f8f9ff",
+                        "primary-container": "#6063ee",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#464554",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#6cf8bb",
+                        "primary": "#4648d4",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#b55d00",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#eff4ff",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-fixed": "#301400",
+                        "secondary": "#006c49",
+                        "background": "#f8f9ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface": "#f8f9ff",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "surface-dim": "#cbdbf5",
+                        "on-tertiary-container": "#fffbff",
+                        "primary-fixed": "#e1e0ff",
+                        "surface-container": "#e5eeff",
+                        "on-primary-container": "#fffbff",
+                        "on-surface": "#0b1c30",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-background": "#0b1c30",
+                        "tertiary-fixed": "#ffdcc5",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary": "#904900",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#767586",
+                        "surface-tint": "#494bd6",
+                        "on-primary-fixed": "#07006c",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-fixed": "#6ffbbe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "gutter": "24px",
+                        "margin-desktop": "32px",
+                        "margin-mobile": "16px",
+                        "sm": "8px",
+                        "container-max": "1440px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "title-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9ff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .vitals-gradient {
+            background: linear-gradient(180deg, rgba(70, 72, 212, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface-container-lowest border-b border-outline-variant dark:border-outline flex justify-between items-center px-margin-mobile h-10 w-full">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" style="font-size: 24px;">visibility</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed-dim">Optometry Portal</h1>
+</div>
+<button class="p-base hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 rounded-full flex items-center justify-center" id="themeToggle">
+<span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant">light_mode</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-16 pb-24 px-margin-mobile max-w-container-max mx-auto">
+<!-- Welcome Section -->
+<section class="mb-xl">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile mb-xs">Welcome back, Sarah</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Your eye health is looking stable since your last visit.</p>
+</section>
+<!-- Quick Stats Grid (Bento) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-xl">
+<!-- Last Exam Card -->
+<div class="md:col-span-6 bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col justify-between hover:border-primary/30 transition-colors duration-200">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Last Exam</p>
+<p class="font-title-md text-title-md mt-xs">June 12, 2023</p>
+</div>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg text-display-lg text-primary">20/20</span>
+<span class="font-body-lg text-body-lg text-on-surface-variant">L</span>
+</div>
+</div>
+<!-- Next Visit Card -->
+<div class="md:col-span-6 bg-primary text-on-primary p-lg rounded-xl flex flex-col justify-between hover:bg-primary-container transition-colors duration-200 cursor-pointer shadow-sm">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="font-label-md text-label-md opacity-80 uppercase tracking-wider text-on-primary">Next Visit</p>
+<p class="font-title-md text-title-md mt-xs">Dr. Aris Thorne</p>
+</div>
+<span class="material-symbols-outlined text-on-primary">event</span>
+</div>
+<div>
+<span class="font-display-lg text-display-lg">Oct 14</span>
+<p class="font-body-sm text-body-sm opacity-90 mt-xs">09:15 AM • Annual Checkup</p>
+</div>
+</div>
+<!-- Vision Trends Section (Asymmetric) -->
+<div class="md:col-span-12 bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="p-lg border-b border-outline-variant flex justify-between items-center">
+<div>
+<h3 class="font-title-md text-title-md">Vision Trends</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Visual acuity tracking over 24 months</p>
+</div>
+<button class="flex items-center gap-xs text-primary font-label-md text-label-md">
+                        FULL REPORT <span class="material-symbols-outlined text-sm">trending_up</span>
+</button>
+</div>
+<div class="p-lg h-64 vitals-gradient relative">
+<!-- Sparkline / Graph Placeholder -->
+<div class="absolute inset-0 flex items-end px-lg pb-lg">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 1000 200">
+<path d="M0,150 Q100,120 200,140 T400,100 T600,110 T800,60 T1000,70" fill="none" stroke="#4648d4" stroke-width="3"></path>
+<circle cx="800" cy="60" fill="#4648d4" r="6"></circle>
+<path d="M0,150 Q100,120 200,140 T400,100 T600,110 T800,60 T1000,70 V200 H0 Z" fill="url(#grad1)" opacity="0.1"></path>
+<defs>
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#4648d4;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#4648d4;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+<!-- Data Labels -->
+<div class="absolute top-md right-lg text-right">
+<p class="font-label-md text-label-md text-secondary">STABLE ACUITY</p>
+<p class="font-headline-lg-mobile text-headline-lg-mobile">+2% improvement</p>
+</div>
+</div>
+</div>
+<!-- Quick Actions -->
+<div class="md:col-span-4 bg-surface-container-low p-md rounded-xl border border-outline-variant/50 flex items-center gap-md hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">medication</span>
+</div>
+<div>
+<p class="font-label-md text-label-md">Prescriptions</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">2 Active refills</p>
+</div>
+</div>
+<div class="md:col-span-4 bg-surface-container-low p-md rounded-xl border border-outline-variant/50 flex items-center gap-md hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<p class="font-label-md text-label-md">Billing</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">No balance due</p>
+</div>
+</div>
+<div class="md:col-span-4 bg-surface-container-low p-md rounded-xl border border-outline-variant/50 flex items-center gap-md hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<div>
+<p class="font-label-md text-label-md">Support</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Chat with office</p>
+</div>
+</div>
+</div>
+<!-- Eye Health Article (Marketing Component) -->
+<div class="relative rounded-xl overflow-hidden h-48 flex items-center group cursor-pointer shadow-sm">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Close up high-resolution professional medical photography of a human iris with intricate blue and gold patterns, shot with macro lens, clean clinical lighting, soft white sterile background, modern medical aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCSyJc2UH-2-jBwIk3-b9sNFwNM5CAilS9chYMfNUsy9TBm-nSueTdy2XhE7QgVC_jQyj3EgP8HT4K_fgO9_2xcN0lR5iyPcTS4VPeFxHEzHgWqdbBXAanjCyTMMqvbgQmnKVRip-KXegDESCHGYkqaWJgj7JcxMLUYRcFBY8HbvzvUa0owp1zsfjcBNXWDBwQXOuJfSJyz-ezEVzSaGrKNYVy97BupR3WZapzcwtIXene552VwHDNMPcPp6sBNTSh_QfAWtQnG3m2c')"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+<div class="relative z-10 px-lg text-white max-w-xs">
+<h4 class="font-title-md text-title-md mb-xs">Protecting your vision from blue light</h4>
+<p class="font-body-sm text-body-sm opacity-80">Learn the latest findings from our clinical research team.</p>
+<button class="mt-md font-label-md text-label-md bg-white text-primary px-md py-xs rounded-full">Read More</button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center bg-surface dark:bg-surface-container-lowest py-2 px-margin-mobile border-t border-outline-variant dark:border-outline z-50">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-container text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 transition-transform duration-150 scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<!-- Appts -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant py-1 hover:bg-surface-container-high transition-colors rounded-xl px-2" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">Appts</span>
+</a>
+<!-- History -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant py-1 hover:bg-surface-container-high transition-colors rounded-xl px-2" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">History</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant py-1 hover:bg-surface-container-high transition-colors rounded-xl px-2" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+<script>
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('.material-symbols-outlined');
+        
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+            
+            // Subtle feedback
+            themeToggle.classList.add('scale-90');
+            setTimeout(() => themeToggle.classList.remove('scale-90'), 150);
+        });
+
+        // Interactive hover effects for Bento cards
+        document.querySelectorAll('.grid > div').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                if(!card.classList.contains('bg-primary')) {
+                    card.style.borderColor = 'rgba(70, 72, 212, 0.3)';
+                }
+            });
+            card.addEventListener('mouseleave', () => {
+                if(!card.classList.contains('bg-primary')) {
+                    card.style.borderColor = '';
+                }
+            });
+        });
+    </script>
+</body></html>

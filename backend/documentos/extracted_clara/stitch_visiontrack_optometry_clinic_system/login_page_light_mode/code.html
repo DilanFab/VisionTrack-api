@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VisionTrack Login | Secure Access</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#eff4ff",
+                        "surface": "#f8f9ff",
+                        "secondary-fixed": "#6ffbbe",
+                        "secondary": "#006c49",
+                        "primary-container": "#6063ee",
+                        "surface-variant": "#d3e4fe",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#07006c",
+                        "on-tertiary-fixed": "#301400",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#e5eeff",
+                        "primary-fixed": "#e1e0ff",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "tertiary-container": "#b55d00",
+                        "outline-variant": "#c7c4d7",
+                        "on-primary-container": "#fffbff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-container": "#fffbff",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-surface-variant": "#464554",
+                        "on-secondary-fixed-variant": "#005236",
+                        "inverse-primary": "#c0c1ff",
+                        "background": "#f8f9ff",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#6cf8bb",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdcc5",
+                        "primary": "#4648d4",
+                        "tertiary": "#904900",
+                        "surface-bright": "#f8f9ff",
+                        "surface-tint": "#494bd6",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-container": "#00714d",
+                        "surface-container-highest": "#d3e4fe",
+                        "error": "#ba1a1a",
+                        "outline": "#767586",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-surface": "#0b1c30"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "margin-desktop": "32px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "container-max": "1440px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "code-sm": ["JetBrains Mono"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "code-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1;
+        }
+        body {
+            background-color: #f8f9ff;
+            font-family: 'Inter', sans-serif;
+        }
+        .bento-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            transition: border-color 0.2s ease;
+        }
+        .bento-card:hover {
+            border-color: rgba(70, 72, 212, 0.3);
+        }
+        input:focus {
+            outline: none;
+            border-color: #4648d4;
+            box-shadow: 0 0 0 2px rgba(70, 72, 212, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen">
+<!-- Header Section -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant h-16 flex items-center justify-center px-margin-mobile">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[28px]" data-icon="visibility">visibility</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight">VisionTrack</h1>
+</div>
+</header>
+<!-- Main Content (Bento Style Login) -->
+<main class="flex-grow flex items-center justify-center px-margin-mobile pt-24 pb-32">
+<div class="w-full max-w-md space-y-lg">
+<!-- Branding/Security Context Card -->
+<div class="bento-card p-lg rounded-xl flex items-start gap-md">
+<div class="w-12 h-12 rounded-lg bg-primary-container/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="admin_panel_settings" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+</div>
+<div>
+<h2 class="font-title-md text-title-md text-on-surface">Secure Administrator Portal</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Precision diagnostics and patient data management require authenticated access.</p>
+</div>
+</div>
+<!-- Login Form Card -->
+<div class="bento-card p-lg rounded-xl shadow-sm">
+<form class="space-y-md" onsubmit="event.preventDefault();">
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="email">ADMINISTRATOR EMAIL</label>
+<div class="relative">
+<input class="w-full h-[48px] px-md rounded-lg border border-outline-variant bg-surface-container-lowest font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:ring-0" id="email" placeholder="admin@visiontrack.med" type="email"/>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-outline" data-icon="mail">mail</span>
+</div>
+</div>
+<div class="space-y-xs">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant" for="password">PASSWORD</label>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">Forgot?</a>
+</div>
+<div class="relative">
+<input class="w-full h-[48px] px-md rounded-lg border border-outline-variant bg-surface-container-lowest font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:ring-0" id="password" placeholder="••••••••••••" type="password"/>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-outline" data-icon="lock">lock</span>
+</div>
+</div>
+<div class="flex items-center gap-sm py-xs">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20" id="remember" type="checkbox"/>
+<label class="font-body-sm text-body-sm text-on-surface-variant cursor-pointer select-none" for="remember">Remember this workstation</label>
+</div>
+<button class="w-full h-[48px] bg-primary text-on-primary rounded-lg font-title-md text-title-md flex items-center justify-center gap-sm hover:brightness-110 active:scale-[0.98] transition-all group">
+                        Login
+                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+</div>
+<!-- Trust / Data Visualization Card -->
+<div class="relative h-24 overflow-hidden rounded-xl border border-outline-variant bg-white">
+<div class="absolute inset-0 opacity-10">
+<div class="w-full h-full" style="background-image: radial-gradient(circle at 2px 2px, #4648d4 1px, transparent 0); background-size: 24px 24px;"></div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center gap-xl">
+<div class="flex flex-col items-center">
+<span class="font-label-md text-label-md text-primary">ENCRYPTION</span>
+<span class="font-title-md text-title-md text-on-surface">AES-256</span>
+</div>
+<div class="w-px h-12 bg-outline-variant"></div>
+<div class="flex flex-col items-center">
+<span class="font-label-md text-label-md text-secondary">COMPLIANCE</span>
+<span class="font-title-md text-title-md text-on-surface">HIPAA</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Section -->
+<footer class="fixed bottom-0 w-full bg-surface border-t border-outline-variant py-md px-margin-mobile flex flex-col items-center gap-sm">
+<div class="flex gap-md">
+<span class="px-sm py-1 bg-surface-container-high rounded-full font-label-md text-label-md text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified_user">verified_user</span>
+                AES-256
+            </span>
+<span class="px-sm py-1 bg-secondary-container/20 rounded-full font-label-md text-label-md text-secondary flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="health_and_safety">health_and_safety</span>
+                HIPAA COMPLIANT
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-center max-w-xs">
+            This workstation is monitored. Unauthorized access attempts are logged and reported to the system administrator.
+        </p>
+<p class="font-label-md text-label-md text-outline uppercase tracking-widest mt-xs">
+            © 2024 VISIONTRACK OPTOMETRY. ALL RIGHTS RESERVED.
+        </p>
+</footer>
+<script>
+        // Micro-interaction for input fields
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('.material-symbols-outlined').style.color = '#4648d4';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('.material-symbols-outlined').style.color = '#767586';
+            });
+        });
+
+        // Toggle Password visibility logic (optional UX improvement)
+        const passIcon = document.querySelector('input[type="password"]').nextElementSibling;
+        passIcon.classList.add('cursor-pointer');
+        passIcon.addEventListener('click', () => {
+            const input = document.getElementById('password');
+            if (input.type === 'password') {
+                input.type = 'text';
+                passIcon.textContent = 'visibility';
+            } else {
+                input.type = 'password';
+                passIcon.textContent = 'lock';
+            }
+        });
+    </script>
+</body></html>
