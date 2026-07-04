@@ -1,11 +1,14 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
 
 // Gestión de Usuarios
 import generoRoutes from "./routes/usuarios/generoRoutes";
 import personaRoutes from "./routes/usuarios/personaRoutes";
 import usuarioRoutes from "./routes/usuarios/usuarioRoutes";
+import usuarioCompletoRoutes from "./routes/usuarios/usuarioCompletoRoutes";
+import uploadRoutes from "./routes/usuarios/uploadRoutes";
 import authRoutes from "./routes/authRoutes";
 // Gestión de Roles y Permisos
 import menuRoutes from "./routes/rolesPermisos/menuRoutes";
@@ -29,6 +32,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
 // Ruta de prueba
 app.get("/", (req, res) => {
@@ -41,6 +45,8 @@ app.get("/", (req, res) => {
 app.use("/api/generos", generoRoutes);
 app.use("/api/personas", personaRoutes);
 app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/usuarios-completos", usuarioCompletoRoutes);
+app.use("/api/uploads", uploadRoutes);
 app.use("/api/auth", authRoutes);
 // Gestión de Roles y Permisos
 app.use("/api/menus", menuRoutes);
