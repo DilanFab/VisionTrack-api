@@ -18,9 +18,11 @@ import perfilRoutes from "./routes/rolesPermisos/perfilRoutes";
 // Gestión de Médicos
 import especialidadMedicaRoutes from "./routes/medicos/especialidadMedicaRoutes";
 import doctorRoutes from "./routes/medicos/doctorRoutes";
+import doctorCompletoRoutes from "./routes/medicos/doctorCompletoRoutes";
 import horarioDoctorRoutes from "./routes/medicos/horarioDoctorRoutes";
 // Gestión de Citas
 import historiaClinicaRoutes from "./routes/citas/historiaClinicaRoutes";
+import pacienteCompletoRoutes from "./routes/citas/pacienteCompletoRoutes";
 import estadoCitaRoutes from "./routes/citas/estadoCitaRoutes";
 import citaRoutes from "./routes/citas/citaRoutes";
 
@@ -56,9 +58,11 @@ app.use("/api/perfiles", perfilRoutes);
 // Gestión de Médicos
 app.use("/api/especialidades-medicas", especialidadMedicaRoutes);
 app.use("/api/doctores", doctorRoutes);
+app.use("/api/doctores-completos", doctorCompletoRoutes);
 app.use("/api/horarios-doctor", horarioDoctorRoutes);
 // Gestión de Citas
 app.use("/api/historias-clinicas", historiaClinicaRoutes);
+app.use("/api/pacientes-completos", pacienteCompletoRoutes);
 app.use("/api/estados-cita", estadoCitaRoutes);
 app.use("/api/citas", citaRoutes);
 

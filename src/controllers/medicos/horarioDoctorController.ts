@@ -11,6 +11,51 @@ export const getHorariosDoctor = async (req: Request, res: Response) => {
   }
 };
 
+// GET /api/horarios-doctor/doctor/:doctorId
+export const getHorariosPorDoctor = async (req: Request, res: Response) => {
+  try {
+    const { doctorId } = req.params;
+    const horarios = await prisma.tbl_horario_doctor.findMany({
+      where: { doctor_id: Number(doctorId), horario_doctor_estado: "A" },
+    });
+    res.json(horarios);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener los horarios del doctor" });
+  }
+};
+
+// PUT /api/horarios-doctor/doctor/:doctorId
+// Reemplaza por completo el horario del doctor: borra físicamente los horarios
+// previos y guarda los nuevos, evitando registros duplicados o residuales.
+export const setHorariosPorDoctor = async (req: Request, res: Response) => {
+  try {
+    const { doctorId } = req.params;
+    const { horarios } = req.body;
+
+    await prisma.$transaction(async (tx) => {
+      await tx.tbl_horario_doctor.deleteMany({ where: { doctor_id: Number(doctorId) } });
+      if (Array.isArray(horarios) && horarios.length > 0) {
+        await tx.tbl_horario_doctor.createMany({
+          data: horarios.map((h: any) => ({
+            doctor_id: Number(doctorId),
+            horario_doctor_dia: h.horario_doctor_dia,
+            horario_doctor_inicio: new Date(`1970-01-01T${h.horario_doctor_inicio}`),
+            horario_doctor_fin: new Date(`1970-01-01T${h.horario_doctor_fin}`),
+            horario_doctor_estado: "A",
+          })),
+        });
+      }
+    });
+
+    const horariosActualizados = await prisma.tbl_horario_doctor.findMany({
+      where: { doctor_id: Number(doctorId), horario_doctor_estado: "A" },
+    });
+    res.json(horariosActualizados);
+  } catch (error) {
+    res.status(500).json({ error: "Error al guardar el horario del doctor" });
+  }
+};
+
 // GET /api/horarios-doctor/:id
 export const getHorarioDoctorById = async (req: Request, res: Response) => {
   try {
