@@ -4,7 +4,9 @@ import prisma from "../../config/prisma";
 // GET /api/menus
 export const getMenus = async (req: Request, res: Response) => {
   try {
-    const menus = await prisma.tbl_menu.findMany();
+    // orden explícito por menu_id: sin ORDER BY, Postgres no garantiza devolver
+    // las filas en el orden de inserción (puede variar tras un UPDATE/VACUUM).
+    const menus = await prisma.tbl_menu.findMany({ orderBy: { menu_id: "asc" } });
     res.json(menus);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener menús" });

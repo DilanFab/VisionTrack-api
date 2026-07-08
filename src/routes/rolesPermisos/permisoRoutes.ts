@@ -5,11 +5,13 @@ import {
   createPermiso,
   updatePermiso,
   deletePermiso,
+  setPermisosDeRol,
 } from "../../controllers/rolesPermisos/permisoController";
 
 const router = Router();
 
 router.get("/", getPermisos);
+router.put("/rol/:id", setPermisosDeRol);
 router.get("/:id", getPermisoById);
 router.post("/", createPermiso);
 router.put("/:id", updatePermiso);
