@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getUsuariosCompletos,
   createUsuarioCompleto,
@@ -8,9 +9,9 @@ import {
 
 const router = Router();
 
-router.get("/", getUsuariosCompletos);
-router.post("/", createUsuarioCompleto);
-router.put("/:id", updateUsuarioCompleto);
-router.delete("/:id", deleteUsuarioCompleto);
+router.get("/", verifyToken, authorize("Admin"), getUsuariosCompletos);
+router.post("/", verifyToken, authorize("Admin"), createUsuarioCompleto);
+router.put("/:id", verifyToken, authorize("Admin"), updateUsuarioCompleto);
+router.delete("/:id", verifyToken, authorize("Admin"), deleteUsuarioCompleto);
 
 export default router;

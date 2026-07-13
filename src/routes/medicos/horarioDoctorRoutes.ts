@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getHorariosDoctor,
   getHorariosPorDoctor,
@@ -11,12 +12,12 @@ import {
 
 const router = Router();
 
-router.get("/", getHorariosDoctor);
-router.get("/doctor/:doctorId", getHorariosPorDoctor);
-router.put("/doctor/:doctorId", setHorariosPorDoctor);
-router.get("/:id", getHorarioDoctorById);
-router.post("/", createHorarioDoctor);
-router.put("/:id", updateHorarioDoctor);
-router.delete("/:id", deleteHorarioDoctor);
+router.get("/", verifyToken, authorize("Admin", "Medico"), getHorariosDoctor);
+router.get("/doctor/:doctorId", verifyToken, authorize("Admin", "Medico"), getHorariosPorDoctor);
+router.put("/doctor/:doctorId", verifyToken, authorize("Admin", "Medico"), setHorariosPorDoctor);
+router.get("/:id", verifyToken, authorize("Admin", "Medico"), getHorarioDoctorById);
+router.post("/", verifyToken, authorize("Admin", "Medico"), createHorarioDoctor);
+router.put("/:id", verifyToken, authorize("Admin", "Medico"), updateHorarioDoctor);
+router.delete("/:id", verifyToken, authorize("Admin", "Medico"), deleteHorarioDoctor);
 
 export default router;

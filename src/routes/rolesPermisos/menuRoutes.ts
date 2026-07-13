@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getMenus,
   getMenuById,
@@ -9,10 +10,10 @@ import {
 
 const router = Router();
 
-router.get("/", getMenus);
-router.get("/:id", getMenuById);
-router.post("/", createMenu);
-router.put("/:id", updateMenu);
-router.delete("/:id", deleteMenu);
+router.get("/", verifyToken, authorize("Admin"), getMenus);
+router.get("/:id", verifyToken, authorize("Admin"), getMenuById);
+router.post("/", verifyToken, authorize("Admin"), createMenu);
+router.put("/:id", verifyToken, authorize("Admin"), updateMenu);
+router.delete("/:id", verifyToken, authorize("Admin"), deleteMenu);
 
 export default router;

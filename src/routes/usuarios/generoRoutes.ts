@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getGeneros,
   getGeneroById,
@@ -11,8 +12,8 @@ const router = Router();
 
 router.get("/", getGeneros);
 router.get("/:id", getGeneroById);
-router.post("/", createGenero);
-router.put("/:id", updateGenero);
-router.delete("/:id", deleteGenero);
+router.post("/", verifyToken, authorize("Admin"), createGenero);
+router.put("/:id", verifyToken, authorize("Admin"), updateGenero);
+router.delete("/:id", verifyToken, authorize("Admin"), deleteGenero);
 
 export default router;
