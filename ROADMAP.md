@@ -63,11 +63,11 @@ Funcionalidades nuevas para completar el negocio.
 
 - [ ] Paginación, búsqueda y filtros en endpoints GET
 - [ ] Recuperación de contraseña (forgot/reset password)
-- [ ] Refresh tokens (JWT con refresh)
+- [x] Refresh tokens (JWT con refresh)
 - [ ] Bloqueo de cuenta tras N intentos fallidos (campo `usuario_intentos`)
 - [ ] Notificaciones (email/SMS) para recordatorio de citas
 - [ ] Dashboard con KPIs (citas hoy, pacientes nuevos, etc.)
-- [ ] Agenda del doctor (slots disponibles)
+- [x] Agenda del doctor (slots disponibles)
 - [ ] Historial de cambios / auditoría
 - [ ] Exportar reportes (PDF/Excel)
 

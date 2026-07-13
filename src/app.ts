@@ -28,6 +28,8 @@ import historiaClinicaRoutes from "./routes/citas/historiaClinicaRoutes";
 import pacienteCompletoRoutes from "./routes/citas/pacienteCompletoRoutes";
 import estadoCitaRoutes from "./routes/citas/estadoCitaRoutes";
 import citaRoutes from "./routes/citas/citaRoutes";
+// App Móvil
+import pacienteMovilRoutes from "./routes/movil/pacienteRoutes";
 
 dotenv.config();
 
@@ -77,6 +79,8 @@ app.use("/api/historias-clinicas", historiaClinicaRoutes);
 app.use("/api/pacientes-completos", pacienteCompletoRoutes);
 app.use("/api/estados-cita", estadoCitaRoutes);
 app.use("/api/citas", citaRoutes);
+// App Móvil
+app.use("/api/movil", pacienteMovilRoutes);
 
 // Manejador global de errores (debe ir último)
 app.use(errorHandler);

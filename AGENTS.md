@@ -95,11 +95,12 @@ Dos middlewares en `src/middlewares/auth.ts`:
 
 ### Autenticación
 - JWT con payload `{ usuario_id, usuario_nombre, email, roles }`.
-- Expiración: 24h.
+- Access token: 15 min. Refresh token: 7 días.
 - Secret hardcodeado como fallback: `"visiontrack-super-secret-key-change-in-production"`. **Pendiente**: mover a `.env` (no urgente, ya se puede sobreescribir).
 - Middlewares implementados: `verifyToken` + `authorize(...roles)` en `src/middlewares/auth.ts`.
 - Variable `AUTH_BYPASS=true` en `.env` para desarrollo — desactiva toda verificación.
 - IDs de rol hardcodeados: Admin=1, Medico=3, Paciente=4.
+- **Refresh tokens**: stateless JWT, endpoint `POST /api/auth/refresh`.
 
 ### Seguridad (implementados Julio 2026)
 - **Helmet**: headers de seguridad HTTP (X-XSS-Protection, X-Frame-Options, CSP, etc.).
@@ -124,8 +125,9 @@ Dos middlewares en `src/middlewares/auth.ts`:
 ## API — Resumen de Endpoints (72 totales)
 
 ### Auth — `/api/auth`
-- `POST /login` — login con email+password, devuelve JWT
-- `POST /register` — registro paciente/doctor, devuelve JWT
+- `POST /login` — login con email+password, devuelve accessToken + refreshToken
+- `POST /register` — registro paciente/doctor, devuelve accessToken + refreshToken
+- `POST /refresh` — recibe refreshToken, devuelve nuevo par de tokens
 
 ### CRUD estándar (5 endpoints c/u: GET all, GET by id, POST, PUT, DELETE lógico)
 - `/api/generos`
@@ -150,6 +152,12 @@ Dos middlewares en `src/middlewares/auth.ts`:
 - `POST /api/uploads/imagen` — foto de usuario
 - `POST /api/uploads/imagen-paciente` — foto de paciente (guarda en frontend)
 
+### App Móvil — `/api/movil`
+- `GET /disponibilidad?fecha=&doctor_id=` — slots libres (público)
+- `GET /mis-citas` — citas del paciente (Paciente)
+- `POST /agendar` — agendar cita (Paciente)
+- `DELETE /mis-citas/:id` — cancelar cita propia (Paciente)
+
 ## BD — Modelos Principales
 
 ```
@@ -170,5 +178,7 @@ tbl_menu 1──N tbl_menu (self-ref) ── N tbl_permiso N──1 tbl_rol
 6. ✅ Agregar rate-limiting en login/register
 7. ✅ Implementar manejador global de errores
 8. ✅ Agregar validación con Zod
-9. Implementar refresh tokens (para app móvil)
-10. Endpoints móviles: disponibilidad, mis citas, agendar
+9. ✅ Implementar refresh tokens (para app móvil)
+10. ✅ Endpoints móviles: disponibilidad, mis citas, agendar
+11. Notificaciones (email/SMS) para recordatorio de citas
+12. Paginación y filtros

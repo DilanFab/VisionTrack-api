@@ -34,7 +34,7 @@ const citaInclude = {
 // Una cita ocupa un slot (doctor + horario recurrente + fecha real). Se
 // considera "ocupado" si ya existe una cita activa (no cancelada) para ese
 // mismo horario_doctor_id y cita_fecha exactos.
-const existeConflictoDeHorario = async (
+export const existeConflictoDeHorario = async (
   horario_doctor_id: number,
   cita_fecha: Date,
   excluirCitaId?: number

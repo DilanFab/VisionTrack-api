@@ -2,9 +2,18 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prisma";
-import { loginSchema, registerSchema } from "../validations/auth.schema";
+import { loginSchema, registerSchema, refreshSchema } from "../validations/auth.schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "visiontrack-super-secret-key-change-in-production";
+
+const ACCESS_EXPIRY = "15m";
+const REFRESH_EXPIRY = "7d";
+
+const signTokens = (payload: object) => {
+  const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_EXPIRY });
+  const refreshToken = jwt.sign(payload, JWT_SECRET, { expiresIn: REFRESH_EXPIRY });
+  return { accessToken, refreshToken };
+};
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -57,21 +66,19 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
 
-    // Generar Token JWT
-    const token = jwt.sign(
-      {
-        usuario_id: usuario.usuario_id,
-        usuario_nombre: usuario.usuario_nombre,
-        email: usuario.persona.persona_correo,
-        roles,
-      },
-      JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    // Generar Tokens JWT
+    const payload = {
+      usuario_id: usuario.usuario_id,
+      usuario_nombre: usuario.usuario_nombre,
+      email: usuario.persona.persona_correo,
+      roles,
+    };
+    const { accessToken, refreshToken } = signTokens(payload);
 
-    // Responder con datos de usuario y token
+    // Responder con datos de usuario y tokens
     res.json({
-      token,
+      accessToken,
+      refreshToken,
       usuario: {
         usuario_id: usuario.usuario_id,
         usuario_nombre: usuario.usuario_nombre,
@@ -212,21 +219,19 @@ export const register = async (req: Request, res: Response) => {
       return { persona, usuario, perfil };
     });
 
-    // 4. Firmar y retornar el token JWT para inicio de sesión inmediato
+    // 4. Firmar tokens JWT para inicio de sesión inmediato
     const roles = [resultado.perfil.rol.rol_nombre];
-    const token = jwt.sign(
-      {
-        usuario_id: resultado.usuario.usuario_id,
-        usuario_nombre: resultado.usuario.usuario_nombre,
-        email: resultado.persona.persona_correo,
-        roles,
-      },
-      JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    const payload = {
+      usuario_id: resultado.usuario.usuario_id,
+      usuario_nombre: resultado.usuario.usuario_nombre,
+      email: resultado.persona.persona_correo,
+      roles,
+    };
+    const { accessToken, refreshToken } = signTokens(payload);
 
     res.status(201).json({
-      token,
+      accessToken,
+      refreshToken,
       usuario: {
         usuario_id: resultado.usuario.usuario_id,
         usuario_nombre: resultado.usuario.usuario_nombre,
@@ -242,6 +247,35 @@ export const register = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error en registro:", error);
     res.status(500).json({ error: "Error en el servidor al registrar el usuario" });
+  }
+};
+
+export const refresh = async (req: Request, res: Response) => {
+  try {
+    const parsed = refreshSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0].message });
+      return;
+    }
+
+    const { refreshToken } = parsed.data;
+
+    try {
+      const decoded = jwt.verify(refreshToken, JWT_SECRET);
+      const payload = {
+        usuario_id: (decoded as any).usuario_id,
+        usuario_nombre: (decoded as any).usuario_nombre,
+        email: (decoded as any).email,
+        roles: (decoded as any).roles,
+      };
+      const tokens = signTokens(payload);
+      res.json(tokens);
+    } catch {
+      res.status(401).json({ error: "Refresh token inválido o expirado" });
+    }
+  } catch (error) {
+    console.error("Error en refresh:", error);
+    res.status(500).json({ error: "Error al refrescar el token" });
   }
 };
 
