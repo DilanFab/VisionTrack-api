@@ -1,7 +1,10 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import dotenv from "dotenv";
 import path from "path";
+import { errorHandler } from "./middlewares/errorHandler";
+import { generalLimiter } from "./middlewares/rateLimit";
 
 // Gestión de Usuarios
 import generoRoutes from "./routes/usuarios/generoRoutes";
@@ -30,8 +33,17 @@ dotenv.config();
 
 const app = express();
 
-// Middlewares
-app.use(cors());
+// Middlewares de seguridad
+app.use(helmet());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGINS?.split(",") || ["http://localhost:5173"],
+    credentials: true,
+  })
+);
+app.use(generalLimiter);
+
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
@@ -65,6 +77,9 @@ app.use("/api/historias-clinicas", historiaClinicaRoutes);
 app.use("/api/pacientes-completos", pacienteCompletoRoutes);
 app.use("/api/estados-cita", estadoCitaRoutes);
 app.use("/api/citas", citaRoutes);
+
+// Manejador global de errores (debe ir último)
+app.use(errorHandler);
 
 // Puerto
 const PORT = process.env.PORT || 3000;

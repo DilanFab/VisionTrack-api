@@ -2,17 +2,19 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prisma";
+import { loginSchema, registerSchema } from "../validations/auth.schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "visiontrack-super-secret-key-change-in-production";
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      res.status(400).json({ error: "El correo y la contraseña son requeridos" });
+    const parsed = loginSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0].message });
       return;
     }
+
+    const { email, password } = parsed.data;
 
     // Buscar al usuario a través de la relación de persona_correo
     const usuario = await prisma.tbl_usuario.findFirst({
@@ -90,8 +92,14 @@ export const login = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
   try {
+    const parsed = registerSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0].message });
+      return;
+    }
+
     const {
-      tipo, // "paciente" | "doctor"
+      tipo,
       cedula,
       primer_nombre,
       segundo_nombre,
@@ -105,31 +113,8 @@ export const register = async (req: Request, res: Response) => {
       usuario_nombre,
       usuario_contrasena,
       usuario_imagen,
-      especialidad_medica_id, // Solo para doctor
-    } = req.body;
-
-    // Validación básica de campos requeridos
-    if (
-      !tipo ||
-      !cedula ||
-      !primer_nombre ||
-      !primer_apellido ||
-      !fecha_nacimiento ||
-      !direccion ||
-      !telefono ||
-      !correo ||
-      !genero_id ||
-      !usuario_nombre ||
-      !usuario_contrasena
-    ) {
-      res.status(400).json({ error: "Todos los campos obligatorios deben ser completados" });
-      return;
-    }
-
-    if (tipo === "doctor" && !especialidad_medica_id) {
-      res.status(400).json({ error: "La especialidad médica es obligatoria para registrarse como Doctor" });
-      return;
-    }
+      especialidad_medica_id,
+    } = parsed.data;
 
     // 1. Validar que no existan duplicados
     const cedulaExiste = await prisma.tbl_persona.findUnique({

@@ -11,6 +11,8 @@
 | Base de datos | PostgreSQL (Supabase) | — |
 | Autenticación | bcryptjs + jsonwebtoken | 3.x / 9.x |
 | Uploads | Multer | ^2.2.0 |
+| Seguridad | helmet + express-rate-limit | ^8.x / ^7.x |
+| Validación | Zod | ^3.x |
 
 ## Estructura del Proyecto
 
@@ -20,7 +22,10 @@ src/
 ├── config/
 │   └── prisma.ts                   # Singleton de PrismaClient
 ├── middlewares/
-│   └── upload.ts                   # Multer — uploadImagenUsuario y uploadImagenPaciente
+│   ├── auth.ts                     # verifyToken + authorize
+│   ├── upload.ts                   # Multer — uploadImagenUsuario y uploadImagenPaciente
+│   ├── rateLimit.ts                # authLimiter (5/min) + generalLimiter (100/min)
+│   └── errorHandler.ts             # Manejador global de errores
 ├── routes/                         # Archivos de rutas (Router de Express)
 │   ├── authRoutes.ts
 │   ├── usuarios/   (genero, persona, usuario, usuarioCompleto, upload)
@@ -76,11 +81,12 @@ Dos middlewares en `src/middlewares/auth.ts`:
 
 ### Controladores
 - Cada handler es un `async (req: Request, res: Response) => {...}`.
-- Usan `try/catch` inline. No hay middleware global de errores (deuda técnica).
+- Usan `try/catch` inline con errorHandler global como fallback.
 - Respuestas exitosas: `res.status(200).json(data)` o `res.status(201).json(data)`.
 - Errores: `res.status(4xx/5xx).json({ error: "mensaje" })`.
 - Conversión de IDs: `Number(req.params.id)`.
 - Las queries de Prisma reutilizables se definen como constantes fuera del handler (ej: `citaInclude`, `usuarioCompletoSelect`).
+- Validación de entrada con Zod schemas en `src/validations/`.
 
 ### Prisma / Base de datos
 - Borrado lógico con campo `*_estado` tipo `@db.Char(1)` — valores `"A"` (activo) e `"I"` (inactivo).
@@ -95,17 +101,24 @@ Dos middlewares en `src/middlewares/auth.ts`:
 - Variable `AUTH_BYPASS=true` en `.env` para desarrollo — desactiva toda verificación.
 - IDs de rol hardcodeados: Admin=1, Medico=3, Paciente=4.
 
+### Seguridad (implementados Julio 2026)
+- **Helmet**: headers de seguridad HTTP (X-XSS-Protection, X-Frame-Options, CSP, etc.).
+- **CORS**: whitelist configurable vía `CORS_ORIGINS` en `.env` (default: `http://localhost:5173`).
+- **Rate-limit**: `authLimiter` (5 req/min) en login/register, `generalLimiter` (100 req/min) global.
+- **Error handler**: `src/middlewares/errorHandler.ts` — captura errores no operacionales, respuesta consistente.
+- **Zod**: schemas de validación en `src/validations/` — login y register ya integrados.
+
 ## Decisiones Activas (Deuda Técnica Documentada)
 
 | # | Decisión | Impacto | Plan |
 |---|----------|---------|------|
 | 1 | ~~Sin middleware de auth en rutas~~ | ~~API pública~~ | ✅ Implementado verifyToken + authorize |
 | 2 | JWT_SECRET hardcodeado | Riesgo de seguridad | Mover a .env |
-| 3 | CORS abierto (`cors()`) | Riesgo de seguridad | Configurar whitelist |
+| 3 | ~~CORS abierto (`cors()`)~~ | ~~Riesgo de seguridad~~ | ✅ Whitelist configurable vía CORS_ORIGINS |
 | 4 | Sin capa de servicios | Controladores gruesos, difícil testear | Refactor a services |
-| 5 | Sin validación (Zod/Joi) | Datos mal formados pueden llegar a BD | Agregar validación |
+| 5 | ~~Sin validación (Zod/Joi)~~ | ~~Datos mal formados pueden llegar a BD~~ | ✅ Zod en auth (login + register) |
 | 6 | Sin tests | No hay cobertura | Setup Jest + tests |
-| 7 | Sin manejador global de errores | Código repetitivo, errores inconsistentes | Middleware errorHandler |
+| 7 | ~~Sin manejador global de errores~~ | ~~Código repetitivo, errores inconsistentes~~ | ✅ errorHandler.ts implementado |
 | 8 | Sin paginación/filtros | GETs traen todo sin límite | Agregar query params |
 
 ## API — Resumen de Endpoints (72 totales)
@@ -151,11 +164,11 @@ tbl_menu 1──N tbl_menu (self-ref) ── N tbl_permiso N──1 tbl_rol
 
 1. ✅ Middleware de autenticación JWT (`verifyToken`)
 2. ✅ Middleware de autorización por rol (`authorize`)
-3. Mover JWT_SECRET a variable de entorno
-4. Restringir CORS a orígenes conocidos
-5. Agregar helmet para headers de seguridad
-6. Agregar rate-limiting en login/register
-7. Implementar manejador global de errores
-8. Agregar validación con Zod
+3. ✅ Mover JWT_SECRET a variable de entorno
+4. ✅ Restringir CORS a orígenes conocidos
+5. ✅ Agregar helmet para headers de seguridad
+6. ✅ Agregar rate-limiting en login/register
+7. ✅ Implementar manejador global de errores
+8. ✅ Agregar validación con Zod
 9. Implementar refresh tokens (para app móvil)
 10. Endpoints móviles: disponibilidad, mis citas, agendar

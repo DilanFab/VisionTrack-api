@@ -31,13 +31,13 @@ Cerrar las vulnerabilidades críticas antes de producción.
 
 - [x] Middleware `verifyToken` — validar JWT en rutas protegidas
 - [x] Middleware `authorize(...roles)` — guard por rol
-- [ ] Mover `JWT_SECRET` a variable de entorno
-- [ ] Configurar CORS con whitelist de orígenes
-- [ ] Agregar helmet (HTTP security headers)
-- [ ] Agregar express-rate-limit (especialmente en login/register)
-- [ ] Validación de entrada con Zod
+- [x] Mover `JWT_SECRET` a variable de entorno
+- [x] Configurar CORS con whitelist de orígenes
+- [x] Agregar helmet (HTTP security headers)
+- [x] Agregar express-rate-limit (especialmente en login/register)
+- [x] Validación de entrada con Zod
 - [ ] Sanitización de archivos subidos (tipo real, no solo extensión)
-- [ ] Manejo global de errores (middleware errorHandler)
+- [x] Manejo global de errores (middleware errorHandler)
 - [ ] Obscurecer `console.error` en producción
 
 ---
