@@ -1,6 +1,31 @@
 import { Request, Response } from "express";
 import * as notificacionesService from "../services/notificacionesService";
 
+/**
+ * @openapi
+ * /api/notificaciones/push-token:
+ *   post:
+ *     tags: [Notificaciones]
+ *     summary: Registrar token de Expo Push para el usuario autenticado
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token]
+ *             properties:
+ *               token: { type: string, example: "ExponentPushToken[xxxxxxxx]" }
+ *     responses:
+ *       201:
+ *         description: Token push registrado
+ *       200:
+ *         description: Token ya registrado
+ *       400:
+ *         description: Token requerido
+ */
 export const registrarPushToken = async (req: Request, res: Response) => {
   try {
     const { token } = req.body;
@@ -25,6 +50,29 @@ export const registrarPushToken = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/notificaciones/push-token:
+ *   delete:
+ *     tags: [Notificaciones]
+ *     summary: Eliminar token de Expo Push del usuario autenticado
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token]
+ *             properties:
+ *               token: { type: string, example: "ExponentPushToken[xxxxxxxx]" }
+ *     responses:
+ *       200:
+ *         description: Token push eliminado
+ *       400:
+ *         description: Token requerido
+ */
 export const eliminarPushToken = async (req: Request, res: Response) => {
   try {
     const { token } = req.body;

@@ -1,6 +1,16 @@
 import { Request, Response } from "express";
 import * as menuService from "../../services/menuService";
 
+/**
+ * @openapi
+ * /api/menus:
+ *   get:
+ *     tags: [Menus]
+ *     summary: Listar menús
+ *     responses:
+ *       200:
+ *         description: Lista de menús
+ */
 export const getMenus = async (_req: Request, res: Response) => {
   try {
     const menus = await menuService.listar();
@@ -10,6 +20,20 @@ export const getMenus = async (_req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/menus/{id}:
+ *   get:
+ *     tags: [Menus]
+ *     summary: Obtener menú por ID
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Menú encontrado
+ *       404:
+ *         description: Menú no encontrado
+ */
 export const getMenuById = async (req: Request, res: Response) => {
   try {
     const menu = await menuService.obtenerPorId(Number(req.params.id));
@@ -20,6 +44,28 @@ export const getMenuById = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/menus:
+ *   post:
+ *     tags: [Menus]
+ *     summary: Crear menú
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [menu_nombre, menu_referencia]
+ *             properties:
+ *               menu_nombre: { type: string, example: "Dashboard" }
+ *               menu_icono: { type: string, example: "home" }
+ *               menu_referencia: { type: string, example: "/dashboard" }
+ *               menu_padre: { type: integer, example: null }
+ *     responses:
+ *       201:
+ *         description: Menú creado
+ */
 export const createMenu = async (req: Request, res: Response) => {
   try {
     const menu = await menuService.crear(req.body);
@@ -29,6 +75,26 @@ export const createMenu = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/menus/{id}:
+ *   put:
+ *     tags: [Menus]
+ *     summary: Actualizar menú
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               menu_nombre: { type: string, example: "Dashboard" }
+ *     responses:
+ *       200:
+ *         description: Menú actualizado
+ */
 export const updateMenu = async (req: Request, res: Response) => {
   try {
     const menu = await menuService.actualizar(Number(req.params.id), req.body);
@@ -38,6 +104,18 @@ export const updateMenu = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/menus/{id}:
+ *   delete:
+ *     tags: [Menus]
+ *     summary: Desactivar menú
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Menú desactivado
+ */
 export const deleteMenu = async (req: Request, res: Response) => {
   try {
     const menu = await menuService.eliminar(Number(req.params.id));

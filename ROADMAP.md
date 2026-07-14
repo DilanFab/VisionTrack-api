@@ -46,12 +46,12 @@ Cerrar las vulnerabilidades críticas antes de producción.
 
 Profesionalizar el código, hacerlo mantenible y testeable.
 
-- [ ] Refactor: separar capa de servicios (controllers delgados)
-- [ ] Refactor: extraer includes/selects de Prisma a archivos compartidos
-- [ ] Setup de Jest (o Vitest)
-- [ ] Tests unitarios para servicios
+- [x] Refactor: separar capa de servicios (controllers delgados) — 16 services
+- [x] Refactor: extraer includes/selects de Prisma a archivos compartidos
+- [x] Setup de Jest (ts-jest) + jest-mock-extended
+- [x] Tests unitarios para servicios (75 tests en 6 archivos)
 - [ ] Tests de integración para endpoints críticos (auth, citas)
-- [ ] Documentación de API con Swagger/OpenAPI
+- [x] Documentación de API con Swagger/OpenAPI (UI en `/api/docs`)
 - [ ] Script `npm run migrate:deploy` para producción
 - [ ] Mejorar logging (pino o winston en vez de console.error)
 
@@ -61,11 +61,11 @@ Profesionalizar el código, hacerlo mantenible y testeable.
 
 Funcionalidades nuevas para completar el negocio.
 
-- [ ] Paginación, búsqueda y filtros en endpoints GET
+- [x] Paginación, búsqueda y filtros en endpoints GET (8 endpoints)
 - [x] Recuperación de contraseña (forgot/reset password)
 - [x] Refresh tokens (JWT con refresh)
-- [ ] Bloqueo de cuenta tras N intentos fallidos (campo `usuario_intentos`)
-- [ ] Notificaciones (email/SMS) para recordatorio de citas
+- [x] Bloqueo de cuenta tras 5 intentos fallidos (campo `usuario_intentos`)
+- [x] Notificaciones (email/SMS) para recordatorio de citas
 - [ ] Dashboard con KPIs (citas hoy, pacientes nuevos, etc.)
 - [x] Agenda del doctor (slots disponibles)
 - [ ] Historial de cambios / auditoría

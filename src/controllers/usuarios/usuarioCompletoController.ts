@@ -1,6 +1,16 @@
 import { Request, Response } from "express";
 import * as usuarioCompletoService from "../../services/usuarioCompletoService";
 
+/**
+ * @openapi
+ * /api/usuarios-completos:
+ *   get:
+ *     tags: [UsuariosCompletos]
+ *     summary: Listar usuarios completos
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios completos
+ */
 export const getUsuariosCompletos = async (_req: Request, res: Response) => {
   try {
     const usuarios = await usuarioCompletoService.listar();
@@ -10,6 +20,28 @@ export const getUsuariosCompletos = async (_req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/usuarios-completos:
+ *   post:
+ *     tags: [UsuariosCompletos]
+ *     summary: Crear usuario completo (persona + usuario + perfil)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               persona: { type: object, description: Datos de la persona }
+ *               usuario: { type: object, description: Datos del usuario }
+ *               rol_id: { type: integer, example: 3 }
+ *     responses:
+ *       201:
+ *         description: Usuario completo creado
+ *       400:
+ *         description: Dato duplicado o validación fallida
+ */
 export const createUsuarioCompleto = async (req: Request, res: Response) => {
   try {
     const usuario = await usuarioCompletoService.crear(req.body);
@@ -23,6 +55,29 @@ export const createUsuarioCompleto = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/usuarios-completos/{id}:
+ *   put:
+ *     tags: [UsuariosCompletos]
+ *     summary: Actualizar usuario completo
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               persona: { type: object }
+ *               usuario: { type: object }
+ *     responses:
+ *       200:
+ *         description: Usuario completo actualizado
+ *       404:
+ *         description: No encontrado
+ */
 export const updateUsuarioCompleto = async (req: Request, res: Response) => {
   try {
     const usuario = await usuarioCompletoService.actualizar(Number(req.params.id), req.body);
@@ -36,6 +91,18 @@ export const updateUsuarioCompleto = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/usuarios-completos/{id}:
+ *   delete:
+ *     tags: [UsuariosCompletos]
+ *     summary: Desactivar usuario completo
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Usuario completo desactivado
+ */
 export const deleteUsuarioCompleto = async (req: Request, res: Response) => {
   try {
     const usuario = await usuarioCompletoService.eliminar(Number(req.params.id));

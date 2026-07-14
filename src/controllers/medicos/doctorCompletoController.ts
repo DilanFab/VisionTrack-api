@@ -1,6 +1,16 @@
 import { Request, Response } from "express";
 import * as doctorCompletoService from "../../services/doctorCompletoService";
 
+/**
+ * @openapi
+ * /api/doctores-completos:
+ *   get:
+ *     tags: [DoctoresCompletos]
+ *     summary: Listar doctores completos
+ *     responses:
+ *       200:
+ *         description: Lista de doctores completos
+ */
 export const getDoctoresCompletos = async (_req: Request, res: Response) => {
   try {
     const doctores = await doctorCompletoService.listar();
@@ -10,6 +20,28 @@ export const getDoctoresCompletos = async (_req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/doctores-completos:
+ *   post:
+ *     tags: [DoctoresCompletos]
+ *     summary: Crear doctor completo (persona + usuario + perfil + doctor)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               persona: { type: object, description: Datos de la persona }
+ *               usuario: { type: object, description: Datos del usuario }
+ *               especialidad_medica_id: { type: integer, example: 1 }
+ *     responses:
+ *       201:
+ *         description: Doctor completo creado
+ *       400:
+ *         description: Dato duplicado
+ */
 export const createDoctorCompleto = async (req: Request, res: Response) => {
   try {
     const doctor = await doctorCompletoService.crear(req.body);
@@ -23,6 +55,29 @@ export const createDoctorCompleto = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/doctores-completos/{id}:
+ *   put:
+ *     tags: [DoctoresCompletos]
+ *     summary: Actualizar doctor completo
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               persona: { type: object }
+ *               usuario: { type: object }
+ *     responses:
+ *       200:
+ *         description: Doctor completo actualizado
+ *       404:
+ *         description: No encontrado
+ */
 export const updateDoctorCompleto = async (req: Request, res: Response) => {
   try {
     const doctor = await doctorCompletoService.actualizar(Number(req.params.id), req.body);
@@ -36,6 +91,18 @@ export const updateDoctorCompleto = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/doctores-completos/{id}:
+ *   delete:
+ *     tags: [DoctoresCompletos]
+ *     summary: Desactivar doctor completo
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Doctor completo desactivado
+ */
 export const deleteDoctorCompleto = async (req: Request, res: Response) => {
   try {
     const doctor = await doctorCompletoService.eliminar(Number(req.params.id));

@@ -33,6 +33,8 @@ import citaRoutes from "./routes/citas/citaRoutes";
 import pacienteMovilRoutes from "./routes/movil/pacienteRoutes";
 // Notificaciones
 import notificacionesRoutes from "./routes/notificacionesRoutes";
+// Documentación (Swagger UI)
+import docsRoutes from "./docs/routes";
 
 dotenv.config();
 
@@ -86,6 +88,8 @@ app.use("/api/citas", citaRoutes);
 app.use("/api/movil", pacienteMovilRoutes);
 // Notificaciones
 app.use("/api/notificaciones", notificacionesRoutes);
+// Documentación (Swagger UI en /api/docs)
+app.use("/api/docs", docsRoutes);
 
 // Manejador global de errores (debe ir último)
 app.use(errorHandler);

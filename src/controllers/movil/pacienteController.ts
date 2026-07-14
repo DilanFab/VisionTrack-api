@@ -4,6 +4,21 @@ import * as citaService from "../../services/citaService";
 
 const DIAS_SEMANA = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
 
+/**
+ * @openapi
+ * /api/movil/disponibilidad:
+ *   get:
+ *     tags: [Movil]
+ *     summary: Obtener slots disponibles de un doctor en una fecha (público)
+ *     parameters:
+ *       - { name: fecha, in: query, required: true, schema: { type: string }, example: "2026-07-15" }
+ *       - { name: doctor_id, in: query, required: true, schema: { type: integer }, example: 1 }
+ *     responses:
+ *       200:
+ *         description: Slots disponibles
+ *       400:
+ *         description: Parámetros requeridos
+ */
 export const getDisponibilidad = async (req: Request, res: Response) => {
   try {
     const { fecha, doctor_id } = req.query;
@@ -59,6 +74,23 @@ export const getDisponibilidad = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/movil/mis-citas:
+ *   get:
+ *     tags: [Movil]
+ *     summary: Listar citas del paciente autenticado (paginado)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - { name: page, in: query, schema: { type: integer }, example: 1 }
+ *       - { name: limit, in: query, schema: { type: integer }, example: 20 }
+ *     responses:
+ *       200:
+ *         description: Citas del paciente
+ *       404:
+ *         description: Perfil no encontrado
+ */
 export const getMisCitas = async (req: Request, res: Response) => {
   try {
     const perfil = await usuarioService.obtenerPerfilPaciente(req.usuario!.usuario_id);
@@ -81,6 +113,33 @@ export const getMisCitas = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/movil/agendar:
+ *   post:
+ *     tags: [Movil]
+ *     summary: Agendar cita para el paciente autenticado
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [horario_doctor_id, fecha, motivo]
+ *             properties:
+ *               horario_doctor_id: { type: integer, example: 1 }
+ *               fecha: { type: string, example: "2026-07-15" }
+ *               motivo: { type: string, example: "Examen visual" }
+ *     responses:
+ *       201:
+ *         description: Cita agendada
+ *       400:
+ *         description: Conflicto de horario
+ *       404:
+ *         description: Perfil no encontrado
+ */
 export const agendarCita = async (req: Request, res: Response) => {
   try {
     const { horario_doctor_id, fecha, motivo } = req.body;
@@ -120,6 +179,24 @@ export const agendarCita = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/movil/mis-citas/{id}:
+ *   delete:
+ *     tags: [Movil]
+ *     summary: Cancelar cita propia del paciente autenticado
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Cita cancelada
+ *       403:
+ *         description: No tiene permiso para cancelar esta cita
+ *       404:
+ *         description: Cita no encontrada
+ */
 export const cancelarCita = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
