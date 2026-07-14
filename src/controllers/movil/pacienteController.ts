@@ -1,56 +1,9 @@
 import { Request, Response } from "express";
-import prisma from "../../config/prisma";
-import { existeConflictoDeHorario } from "../citas/citaController";
-import { getPagination, paginatedResponse } from "../../utils/pagination";
+import * as usuarioService from "../../services/usuarioService";
+import * as citaService from "../../services/citaService";
 
 const DIAS_SEMANA = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
 
-const citaInclude = {
-  horario_doctor: {
-    include: {
-      doctor: {
-        include: {
-          especialidad_medica: true,
-          perfil: {
-            include: {
-              usuario: { include: { persona: true } },
-            },
-          },
-        },
-      },
-    },
-  },
-  historia_clinica: {
-    include: {
-      perfil: {
-        include: {
-          usuario: { include: { persona: true } },
-        },
-      },
-    },
-  },
-  estado_cita: true,
-};
-
-async function getPerfilPaciente(usuarioId: number) {
-  const perfil = await prisma.tbl_perfil.findFirst({
-    where: {
-      usuario_id: usuarioId,
-      rol: { rol_nombre: "Paciente" },
-      perfil_estado: "A",
-    },
-  });
-  return perfil;
-}
-
-async function getHistoriaClinica(perfilId: number) {
-  const hc = await prisma.tbl_historia_clinica.findFirst({
-    where: { paciente_id: perfilId, historia_clinica_estado: "A" },
-  });
-  return hc;
-}
-
-// GET /api/movil/disponibilidad?fecha=YYYY-MM-DD&doctor_id=X
 export const getDisponibilidad = async (req: Request, res: Response) => {
   try {
     const { fecha, doctor_id } = req.query;
@@ -62,7 +15,7 @@ export const getDisponibilidad = async (req: Request, res: Response) => {
     const fechaDate = new Date(fecha as string);
     const diaNombre = DIAS_SEMANA[fechaDate.getDay()];
 
-    const horarios = await prisma.tbl_horario_doctor.findMany({
+    const horarios = await require("../../config/prisma").default.tbl_horario_doctor.findMany({
       where: {
         doctor_id: Number(doctor_id),
         horario_doctor_dia: diaNombre as any,
@@ -76,8 +29,9 @@ export const getDisponibilidad = async (req: Request, res: Response) => {
       return;
     }
 
-    const horarioIds = horarios.map((h) => h.horario_doctor_id);
+    const horarioIds = horarios.map((h: any) => h.horario_doctor_id);
 
+    const prisma = require("../../config/prisma").default;
     const citasOcupadas = await prisma.tbl_cita.findMany({
       where: {
         horario_doctor_id: { in: horarioIds },
@@ -87,11 +41,11 @@ export const getDisponibilidad = async (req: Request, res: Response) => {
       select: { horario_doctor_id: true },
     });
 
-    const ocupados = new Set(citasOcupadas.map((c) => c.horario_doctor_id));
+    const ocupados = new Set(citasOcupadas.map((c: any) => c.horario_doctor_id));
 
     const disponibles = horarios
-      .filter((h) => !ocupados.has(h.horario_doctor_id))
-      .map((h) => ({
+      .filter((h: any) => !ocupados.has(h.horario_doctor_id))
+      .map((h: any) => ({
         horario_doctor_id: h.horario_doctor_id,
         dia: h.horario_doctor_dia,
         inicio: h.horario_doctor_inicio,
@@ -105,38 +59,28 @@ export const getDisponibilidad = async (req: Request, res: Response) => {
   }
 };
 
-// GET /api/movil/mis-citas
 export const getMisCitas = async (req: Request, res: Response) => {
   try {
-    const { page, limit, skip } = getPagination(req.query as { page?: string; limit?: string });
-
-    const perfil = await getPerfilPaciente(req.usuario!.usuario_id);
+    const perfil = await usuarioService.obtenerPerfilPaciente(req.usuario!.usuario_id);
     if (!perfil) {
       res.status(404).json({ error: "Perfil de paciente no encontrado" });
       return;
     }
 
-    const hc = await getHistoriaClinica(perfil.perfil_id);
+    const hc = await usuarioService.obtenerHistoriaClinica(perfil.perfil_id);
     if (!hc) {
       res.status(404).json({ error: "Historia clínica no encontrada" });
       return;
     }
 
-    const where = { historia_clinica_id: hc.historia_clinica_id };
-
-    const [citas, total] = await Promise.all([
-      prisma.tbl_cita.findMany({ where, include: citaInclude, skip, take: limit, orderBy: { cita_fecha: "desc" } }),
-      prisma.tbl_cita.count({ where }),
-    ]);
-
-    res.json(paginatedResponse(citas, total, page, limit));
+    const result = await citaService.listarPorPaciente(hc.historia_clinica_id, req.query as any);
+    res.json(result);
   } catch (error) {
     console.error("Error al obtener citas del paciente:", error);
     res.status(500).json({ error: "Error al obtener las citas" });
   }
 };
 
-// POST /api/movil/agendar
 export const agendarCita = async (req: Request, res: Response) => {
   try {
     const { horario_doctor_id, fecha, motivo } = req.body;
@@ -146,71 +90,54 @@ export const agendarCita = async (req: Request, res: Response) => {
       return;
     }
 
-    const perfil = await getPerfilPaciente(req.usuario!.usuario_id);
+    const perfil = await usuarioService.obtenerPerfilPaciente(req.usuario!.usuario_id);
     if (!perfil) {
       res.status(404).json({ error: "Perfil de paciente no encontrado" });
       return;
     }
 
-    const hc = await getHistoriaClinica(perfil.perfil_id);
+    const hc = await usuarioService.obtenerHistoriaClinica(perfil.perfil_id);
     if (!hc) {
       res.status(404).json({ error: "Historia clínica no encontrada" });
       return;
     }
 
-    const fechaDate = new Date(fecha);
-    const conflicto = await existeConflictoDeHorario(Number(horario_doctor_id), fechaDate);
-    if (conflicto) {
-      res.status(400).json({ error: "El doctor ya tiene una cita agendada en esa fecha y hora" });
-      return;
-    }
-
-    const estadoProgramada = await prisma.tbl_estado_cita.findFirst({
-      where: { estado_cita_nombre: "Programada" },
-    });
-    if (!estadoProgramada) {
-      res.status(500).json({ error: "No existe un estado 'Programada' configurado" });
-      return;
-    }
-
-    const cita = await prisma.tbl_cita.create({
-      data: {
-        horario_doctor_id: Number(horario_doctor_id),
-        historia_clinica_id: hc.historia_clinica_id,
-        cita_fecha: fechaDate,
-        cita_motivo: motivo,
-        estado_cita_id: estadoProgramada.estado_cita_id,
-      },
-      include: citaInclude,
+    const cita = await citaService.crear({
+      horario_doctor_id: Number(horario_doctor_id),
+      historia_clinica_id: hc.historia_clinica_id,
+      cita_fecha: fecha,
+      cita_motivo: motivo,
     });
 
     res.status(201).json(cita);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message?.includes("conflict")) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
     console.error("Error al agendar cita:", error);
     res.status(500).json({ error: "Error al agendar la cita" });
   }
 };
 
-// DELETE /api/movil/mis-citas/:id
 export const cancelarCita = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const perfil = await getPerfilPaciente(req.usuario!.usuario_id);
+    const perfil = await usuarioService.obtenerPerfilPaciente(req.usuario!.usuario_id);
     if (!perfil) {
       res.status(404).json({ error: "Perfil de paciente no encontrado" });
       return;
     }
 
-    const hc = await getHistoriaClinica(perfil.perfil_id);
+    const hc = await usuarioService.obtenerHistoriaClinica(perfil.perfil_id);
     if (!hc) {
       res.status(404).json({ error: "Historia clínica no encontrada" });
       return;
     }
 
-    const cita = await prisma.tbl_cita.findUnique({
-      where: { cita_id: Number(id) },
-    });
+    const prisma = require("../../config/prisma").default;
+    const cita = await prisma.tbl_cita.findUnique({ where: { cita_id: Number(id) } });
 
     if (!cita) {
       res.status(404).json({ error: "Cita no encontrada" });
@@ -222,20 +149,7 @@ export const cancelarCita = async (req: Request, res: Response) => {
       return;
     }
 
-    const estadoCancelada = await prisma.tbl_estado_cita.findFirst({
-      where: { estado_cita_nombre: "Cancelada" },
-    });
-    if (!estadoCancelada) {
-      res.status(500).json({ error: "No existe un estado 'Cancelada' configurado" });
-      return;
-    }
-
-    const citaActualizada = await prisma.tbl_cita.update({
-      where: { cita_id: Number(id) },
-      data: { estado_cita_id: estadoCancelada.estado_cita_id },
-      include: citaInclude,
-    });
-
+    const citaActualizada = await citaService.cancelar(Number(id));
     res.json({ message: "Cita cancelada correctamente", cita: citaActualizada });
   } catch (error) {
     console.error("Error al cancelar cita:", error);

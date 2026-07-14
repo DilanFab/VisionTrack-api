@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import prisma from "../config/prisma";
+import * as notificacionesService from "../services/notificacionesService";
 
-// POST /api/notificaciones/push-token
 export const registrarPushToken = async (req: Request, res: Response) => {
   try {
     const { token } = req.body;
@@ -12,28 +11,20 @@ export const registrarPushToken = async (req: Request, res: Response) => {
       return;
     }
 
-    // Upsert: crear o actualizar si ya existe
-    const existing = await prisma.tbl_push_token.findFirst({
-      where: { usuario_id, token },
-    });
+    const result = await notificacionesService.registrarPushToken(usuario_id, token);
 
-    if (existing) {
-      res.json({ message: "Token push ya registrado", push_token_id: existing.push_token_id });
+    if (result.duplicado) {
+      res.json({ message: "Token push ya registrado", push_token_id: result.push_token_id });
       return;
     }
 
-    const pushToken = await prisma.tbl_push_token.create({
-      data: { usuario_id, token },
-    });
-
-    res.status(201).json({ message: "Token push registrado", push_token_id: pushToken.push_token_id });
+    res.status(201).json({ message: "Token push registrado", push_token_id: result.push_token_id });
   } catch (error) {
     console.error("Error al registrar push token:", error);
     res.status(500).json({ error: "Error al registrar el token push" });
   }
 };
 
-// DELETE /api/notificaciones/push-token
 export const eliminarPushToken = async (req: Request, res: Response) => {
   try {
     const { token } = req.body;
@@ -44,10 +35,7 @@ export const eliminarPushToken = async (req: Request, res: Response) => {
       return;
     }
 
-    await prisma.tbl_push_token.deleteMany({
-      where: { usuario_id, token },
-    });
-
+    await notificacionesService.eliminarPushToken(usuario_id, token);
     res.json({ message: "Token push eliminado" });
   } catch (error) {
     console.error("Error al eliminar push token:", error);
