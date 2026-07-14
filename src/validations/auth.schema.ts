@@ -37,6 +37,17 @@ export const refreshSchema = z.object({
   refreshToken: z.string().min(1, "El refresh token es requerido"),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Formato de correo inválido"),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "El token es requerido"),
+  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type RefreshInput = z.infer<typeof refreshSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

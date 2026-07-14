@@ -62,7 +62,7 @@ Profesionalizar el código, hacerlo mantenible y testeable.
 Funcionalidades nuevas para completar el negocio.
 
 - [ ] Paginación, búsqueda y filtros en endpoints GET
-- [ ] Recuperación de contraseña (forgot/reset password)
+- [x] Recuperación de contraseña (forgot/reset password)
 - [x] Refresh tokens (JWT con refresh)
 - [ ] Bloqueo de cuenta tras N intentos fallidos (campo `usuario_intentos`)
 - [ ] Notificaciones (email/SMS) para recordatorio de citas

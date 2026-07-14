@@ -1,7 +1,14 @@
 import prisma from "../config/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { loginSchema, registerSchema, refreshSchema } from "../validations/auth.schema";
+import crypto from "crypto";
+import { loginSchema, registerSchema, refreshSchema, forgotPasswordSchema, resetPasswordSchema } from "../validations/auth.schema";
+import { enviarEmailResetPassword } from "./email";
+
+const RESET_TOKEN_EXPIRY_MS = 60 * 60 * 1000; // 1 hora
+
+const hashResetToken = (token: string): string =>
+  crypto.createHash("sha256").update(token).digest("hex");
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -208,4 +215,77 @@ export const refresh = async (body: unknown) => {
   } catch {
     throw { status: 401, message: "Refresh token inválido o expirado" };
   }
+};
+
+export const forgotPassword = async (body: unknown) => {
+  const parsed = forgotPasswordSchema.safeParse(body);
+  if (!parsed.success) {
+    throw { status: 400, message: parsed.error.issues[0].message };
+  }
+
+  const { email } = parsed.data;
+
+  const usuario = await prisma.tbl_usuario.findFirst({
+    where: { persona: { persona_correo: email } },
+    include: { persona: true },
+  });
+
+  if (usuario) {
+    const token = crypto.randomBytes(32).toString("hex");
+    const hash = hashResetToken(token);
+    const expiresAt = new Date(Date.now() + RESET_TOKEN_EXPIRY_MS);
+
+    await prisma.tbl_reset_token.create({
+      data: {
+        usuario_id: usuario.usuario_id,
+        reset_token_hash: hash,
+        reset_token_expires_at: expiresAt,
+      },
+    });
+
+    await enviarEmailResetPassword({
+      to: usuario.persona.persona_correo,
+      nombre: `${usuario.persona.persona_primer_nombre} ${usuario.persona.persona_primer_apellido}`,
+      token,
+    });
+  }
+
+  return { message: "Si el correo existe, se ha enviado un enlace de recuperación" };
+};
+
+export const resetPassword = async (body: unknown) => {
+  const parsed = resetPasswordSchema.safeParse(body);
+  if (!parsed.success) {
+    throw { status: 400, message: parsed.error.issues[0].message };
+  }
+
+  const { token, password } = parsed.data;
+  const hash = hashResetToken(token);
+
+  const resetToken = await prisma.tbl_reset_token.findFirst({
+    where: {
+      reset_token_hash: hash,
+      reset_token_usado: false,
+      reset_token_expires_at: { gt: new Date() },
+    },
+  });
+
+  if (!resetToken) {
+    throw { status: 400, message: "Token inválido o expirado" };
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await prisma.$transaction([
+    prisma.tbl_usuario.update({
+      where: { usuario_id: resetToken.usuario_id },
+      data: { usuario_contrasena: hashedPassword, usuario_intentos: 0 },
+    }),
+    prisma.tbl_reset_token.update({
+      where: { reset_token_id: resetToken.reset_token_id },
+      data: { reset_token_usado: true, reset_token_used_at: new Date() },
+    }),
+  ]);
+
+  return { message: "Contraseña actualizada correctamente" };
 };

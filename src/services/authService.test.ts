@@ -3,8 +3,6 @@ jest.mock("../config/prisma", () => ({
   default: require("jest-mock-extended").mockDeep(),
 }));
 
-process.env.JWT_SECRET = "test-secret-key-for-jest-unit-tests";
-
 import prismaMock from "../config/prisma";
 import * as authService from "./authService";
 import bcrypt from "bcryptjs";

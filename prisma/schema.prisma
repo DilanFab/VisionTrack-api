@@ -53,6 +53,7 @@ model tbl_usuario {
   persona                     tbl_persona @relation(fields: [persona_id], references: [persona_id], onDelete: Cascade, onUpdate: Cascade)
   perfiles                    tbl_perfil[]
   push_tokens                 tbl_push_token[]
+  reset_tokens                tbl_reset_token[]
 }
 
 // Gestion de Roles y Permisos
@@ -185,4 +186,16 @@ model tbl_push_token {
   actualizado_en   DateTime  @updatedAt
 
   usuario          tbl_usuario @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model tbl_reset_token {
+  reset_token_id         Int       @id @default(autoincrement())
+  usuario_id             Int
+  reset_token_hash       String    @db.VarChar(255)
+  reset_token_expires_at DateTime
+  reset_token_usado      Boolean   @default(false)
+  reset_token_created_at DateTime  @default(now())
+  reset_token_used_at    DateTime?
+
+  usuario                tbl_usuario @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade, onUpdate: Cascade)
 }

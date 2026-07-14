@@ -135,6 +135,7 @@ Dos middlewares en `src/middlewares/auth.ts`:
 - Variable `AUTH_BYPASS=true` en `.env` para desarrollo — desactiva toda verificación.
 - IDs de rol hardcodeados: Admin=1, Medico=3, Paciente=4.
 - **Refresh tokens**: stateless JWT, endpoint `POST /api/auth/refresh`.
+- **Recuperación de contraseña**: `POST /api/auth/forgot-password` (envía email con token) + `POST /api/auth/reset-password` (verifica token y actualiza contraseña). Token en `tbl_reset_token`, hash SHA-256, expira en 1h, un solo uso.
 
 ### Seguridad (implementados Julio 2026)
 - **Helmet**: headers de seguridad HTTP (X-XSS-Protection, X-Frame-Options, CSP, etc.).
