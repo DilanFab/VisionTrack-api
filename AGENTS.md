@@ -13,6 +13,8 @@
 | Uploads | Multer | ^2.2.0 |
 | Seguridad | helmet + express-rate-limit | ^8.x / ^7.x |
 | Validación | Zod | ^3.x |
+| Testing | Jest + ts-jest | ^30.x / ^29.x |
+| Mocks | jest-mock-extended | ^4.x |
 
 ## Estructura del Proyecto
 
@@ -61,7 +63,8 @@ src/
 │   ├── pacienteCompletoService.ts
 │   └── notificacionesService.ts
 ├── services/
-│   └── push.ts, email.ts          # Servicios externos (Expo Push, Resend)
+│   ├── push.ts, email.ts          # Servicios externos (Expo Push, Resend)
+│   ├── *.test.ts                  # Tests unitarios de cada service (6 archivos, 75 tests)
 ├── jobs/
 │   └── recordatorioCitas.ts        # Cron job (cada 30 min)
 ├── utils/
@@ -140,6 +143,15 @@ Dos middlewares en `src/middlewares/auth.ts`:
 - **Error handler**: `src/middlewares/errorHandler.ts` — captura errores no operacionales, respuesta consistente.
 - **Zod**: schemas de validación en `src/validations/` — login y register ya integrados.
 
+### Testing (implementados Julio 2026)
+- **Framework**: Jest 30 + ts-jest 29 + jest-mock-extended 4.
+- **Config**: `jest.config.js` (CJS) en raíz del proyecto.
+- **Tests**: 6 archivos en `src/services/*.test.ts` — 75 tests unitarios cubriendo todos los services.
+- **Mock de Prisma**: `jest.mock("../config/prisma", () => ({ __esModule: true, default: require("jest-mock-extended").mockDeep() }))`. Se crea el mock **dentro** de la factory para evitar el bug de hoisting de Jest.
+- **JWT_SECRET**: se define `process.env.JWT_SECRET` al inicio de cada test file que use auth.
+- **Zod**: las contraseñas en tests deben tener ≥8 caracteres (validación Zod).
+- **Comandos**: `npm test` (ejecuta todos), `npm run test:watch`, `npm run test:coverage`.
+
 ## Decisiones Activas (Deuda Técnica Documentada)
 
 | # | Decisión | Impacto | Plan |
@@ -149,7 +161,7 @@ Dos middlewares en `src/middlewares/auth.ts`:
 | 3 | ~~CORS abierto (`cors()`)~~ | ~~Riesgo de seguridad~~ | ✅ Whitelist configurable vía CORS_ORIGINS |
 | 4 | ~~Sin capa de servicios~~ | ~~Controladores gruesos, difícil testear~~ | ✅ 16 services extraídos |
 | 5 | ~~Sin validación (Zod/Joi)~~ | ~~Datos mal formados pueden llegar a BD~~ | ✅ Zod en auth (login + register) |
-| 6 | Sin tests | No hay cobertura | Setup Jest + tests |
+| 6 | ~~Sin tests~~ | ~~No hay cobertura~~ | ✅ Jest + ts-jest, 75 tests en 6 archivos |
 | 7 | ~~Sin manejador global de errores~~ | ~~Código repetitivo, errores inconsistentes~~ | ✅ errorHandler.ts implementado |
 | 8 | ~~Sin paginación/filtros~~ | ~~GETs traen todo sin límite~~ | ✅ paginación + filtros implementados |
 
@@ -212,4 +224,5 @@ tbl_menu 1──N tbl_menu (self-ref) ── N tbl_permiso N──1 tbl_rol
 9. ✅ Implementar refresh tokens (para app móvil)
 10. ✅ Endpoints móviles: disponibilidad, mis citas, agendar
 11. Notificaciones (email/SMS) para recordatorio de citas
-12. Paginación y filtros
+12. ✅ Paginación y filtros
+13. ✅ Testing con Jest (75 tests unitarios)
