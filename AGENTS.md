@@ -28,16 +28,47 @@ src/
 │   └── errorHandler.ts             # Manejador global de errores
 ├── routes/                         # Archivos de rutas (Router de Express)
 │   ├── authRoutes.ts
+│   ├── notificacionesRoutes.ts
 │   ├── usuarios/   (genero, persona, usuario, usuarioCompleto, upload)
 │   ├── rolesPermisos/ (menu, rol, permiso, perfil)
 │   ├── medicos/    (especialidadMedica, doctor, doctorCompleto, horarioDoctor)
 │   └── citas/      (cita, estadoCita, historiaClinica, pacienteCompleto)
-└── controllers/                    # Handlers con lógica de negocio inline
-    ├── authController.ts
-    ├── usuarios/   (misma estructura que routes)
-    ├── rolesPermisos/
-    ├── medicos/
-    └── citas/
+├── controllers/                    # Handlers HTTP delgados (solo req/res)
+│   ├── authController.ts
+│   ├── notificacionesController.ts
+│   ├── usuarios/   (misma estructura que routes)
+│   ├── rolesPermisos/
+│   ├── medicos/
+│   ├── citas/
+│   └── movil/
+├── services/                       # Lógica de negocio + queries Prisma (sin Express)
+│   ├── authService.ts              # login, register, refresh
+│   ├── generoService.ts
+│   ├── menuService.ts
+│   ├── rolService.ts
+│   ├── perfilService.ts
+│   ├── permisoService.ts
+│   ├── personaService.ts
+│   ├── usuarioService.ts
+│   ├── usuarioCompletoService.ts
+│   ├── especialidadMedicaService.ts
+│   ├── doctorService.ts
+│   ├── doctorCompletoService.ts
+│   ├── horarioDoctorService.ts
+│   ├── historiaClinicaService.ts
+│   ├── estadoCitaService.ts
+│   ├── citaService.ts
+│   ├── pacienteCompletoService.ts
+│   └── notificacionesService.ts
+├── services/
+│   └── push.ts, email.ts          # Servicios externos (Expo Push, Resend)
+├── jobs/
+│   └── recordatorioCitas.ts        # Cron job (cada 30 min)
+├── utils/
+│   ├── pagination.ts               # getPagination, paginatedResponse
+│   └── filters.ts                  # buildSearchFilter, buildDateFilter, etc.
+└── validations/
+    └── auth.schema.ts              # Zod schemas
 ```
 
 ## Convenciones de Código
@@ -96,7 +127,7 @@ Dos middlewares en `src/middlewares/auth.ts`:
 ### Autenticación
 - JWT con payload `{ usuario_id, usuario_nombre, email, roles }`.
 - Access token: 15 min. Refresh token: 7 días.
-- Secret hardcodeado como fallback: `"visiontrack-super-secret-key-change-in-production"`. **Pendiente**: mover a `.env` (no urgente, ya se puede sobreescribir).
+- **Secret**: `JWT_SECRET` obligatorio en `.env` (sin fallback hardcodeado).
 - Middlewares implementados: `verifyToken` + `authorize(...roles)` en `src/middlewares/auth.ts`.
 - Variable `AUTH_BYPASS=true` en `.env` para desarrollo — desactiva toda verificación.
 - IDs de rol hardcodeados: Admin=1, Medico=3, Paciente=4.
@@ -114,13 +145,13 @@ Dos middlewares en `src/middlewares/auth.ts`:
 | # | Decisión | Impacto | Plan |
 |---|----------|---------|------|
 | 1 | ~~Sin middleware de auth en rutas~~ | ~~API pública~~ | ✅ Implementado verifyToken + authorize |
-| 2 | JWT_SECRET hardcodeado | Riesgo de seguridad | Mover a .env |
+| 2 | ~~JWT_SECRET hardcodeado~~ | ~~Riesgo de seguridad~~ | ✅ JWT_SECRET en .env, sin fallback |
 | 3 | ~~CORS abierto (`cors()`)~~ | ~~Riesgo de seguridad~~ | ✅ Whitelist configurable vía CORS_ORIGINS |
-| 4 | Sin capa de servicios | Controladores gruesos, difícil testear | Refactor a services |
+| 4 | ~~Sin capa de servicios~~ | ~~Controladores gruesos, difícil testear~~ | ✅ 16 services extraídos |
 | 5 | ~~Sin validación (Zod/Joi)~~ | ~~Datos mal formados pueden llegar a BD~~ | ✅ Zod en auth (login + register) |
 | 6 | Sin tests | No hay cobertura | Setup Jest + tests |
 | 7 | ~~Sin manejador global de errores~~ | ~~Código repetitivo, errores inconsistentes~~ | ✅ errorHandler.ts implementado |
-| 8 | Sin paginación/filtros | GETs traen todo sin límite | Agregar query params |
+| 8 | ~~Sin paginación/filtros~~ | ~~GETs traen todo sin límite~~ | ✅ paginación + filtros implementados |
 
 ## API — Resumen de Endpoints (72 totales)
 
