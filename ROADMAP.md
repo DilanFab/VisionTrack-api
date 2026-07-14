@@ -25,7 +25,7 @@ Lo fundamental para que la API funcione y sirva datos al frontend.
 
 ---
 
-## Fase 2 — Seguridad 🟡 PRIORIDAD
+## Fase 2 — Seguridad ✅ LISTO
 
 Cerrar las vulnerabilidades críticas antes de producción.
 
@@ -36,9 +36,9 @@ Cerrar las vulnerabilidades críticas antes de producción.
 - [x] Agregar helmet (HTTP security headers)
 - [x] Agregar express-rate-limit (especialmente en login/register)
 - [x] Validación de entrada con Zod
-- [ ] Sanitización de archivos subidos (tipo real, no solo extensión)
+- [x] Sanitización de archivos subidos (magic bytes validados post-upload)
 - [x] Manejo global de errores (middleware errorHandler)
-- [ ] Obscurecer `console.error` en producción
+- [x] Obscurecer `console.error` en producción (logger condicional)
 
 ---
 
@@ -72,14 +72,3 @@ Funcionalidades nuevas para completar el negocio.
 - [ ] Exportar reportes (PDF/Excel)
 
 ---
-
-## Fase 5 — DevOps 🟢 BAJA
-
-Infraestructura y despliegue.
-
-- [ ] Dockerfile multi-stage
-- [ ] docker-compose.yml (API + DB local para dev)
-- [ ] CI/CD con GitHub Actions (lint → test → build → deploy)
-- [ ] Scripts de deploy automatizado
-- [ ] Health check endpoint mejorado (`/health`)
-- [ ] Configuración HTTPS/TLS

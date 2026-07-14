@@ -2,6 +2,7 @@ import cron from "node-cron";
 import prisma from "../config/prisma";
 import { enviarEmailRecordatorio } from "../services/email";
 import { enviarPushExpo } from "../services/push";
+import { logger } from "../utils/logger";
 
 export const iniciarRecordatorioCitas = () => {
   cron.schedule("*/30 * * * *", async () => {
@@ -93,11 +94,11 @@ export const iniciarRecordatorioCitas = () => {
 
           console.log(`[CRON] Notificación enviada para cita ${cita.cita_id}`);
         } catch (error) {
-          console.error(`[CRON] Error al enviar notificación para cita ${cita.cita_id}:`, error);
+          logger.error(`[CRON] Error al enviar notificación para cita ${cita.cita_id}:`, error);
         }
       }
     } catch (error) {
-      console.error("[CRON] Error en job de recordatorios:", error);
+      logger.error("[CRON] Error en job de recordatorios:", error);
     }
   });
 

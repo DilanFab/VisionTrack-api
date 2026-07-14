@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as usuarioService from "../../services/usuarioService";
 import * as citaService from "../../services/citaService";
+import { logger } from "../../utils/logger";
 
 const DIAS_SEMANA = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
 
@@ -69,7 +70,7 @@ export const getDisponibilidad = async (req: Request, res: Response) => {
 
     res.json({ fecha, doctor_id: Number(doctor_id), dia: diaNombre, disponibles });
   } catch (error) {
-    console.error("Error al obtener disponibilidad:", error);
+    logger.error("Error al obtener disponibilidad:", error);
     res.status(500).json({ error: "Error al obtener disponibilidad" });
   }
 };
@@ -108,7 +109,7 @@ export const getMisCitas = async (req: Request, res: Response) => {
     const result = await citaService.listarPorPaciente(hc.historia_clinica_id, req.query as any);
     res.json(result);
   } catch (error) {
-    console.error("Error al obtener citas del paciente:", error);
+    logger.error("Error al obtener citas del paciente:", error);
     res.status(500).json({ error: "Error al obtener las citas" });
   }
 };
@@ -174,7 +175,7 @@ export const agendarCita = async (req: Request, res: Response) => {
       res.status(400).json({ error: error.message });
       return;
     }
-    console.error("Error al agendar cita:", error);
+    logger.error("Error al agendar cita:", error);
     res.status(500).json({ error: "Error al agendar la cita" });
   }
 };
@@ -229,7 +230,7 @@ export const cancelarCita = async (req: Request, res: Response) => {
     const citaActualizada = await citaService.cancelar(Number(id));
     res.json({ message: "Cita cancelada correctamente", cita: citaActualizada });
   } catch (error) {
-    console.error("Error al cancelar cita:", error);
+    logger.error("Error al cancelar cita:", error);
     res.status(500).json({ error: "Error al cancelar la cita" });
   }
 };

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { logger } from "../utils/logger";
 
 export interface AppError extends Error {
   statusCode?: number;
@@ -15,7 +16,7 @@ export const errorHandler = (
   const message = err.isOperational ? err.message : "Error interno del servidor";
 
   if (!err.isOperational) {
-    console.error("ERROR NO OPERACIONAL:", err);
+    logger.error("ERROR NO OPERACIONAL:", err);
   }
 
   res.status(statusCode).json({

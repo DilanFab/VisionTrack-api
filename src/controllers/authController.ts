@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as authService from "../services/authService";
+import { logger } from "../utils/logger";
 
 /**
  * @openapi
@@ -37,7 +38,7 @@ export const login = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    console.error("Error en login:", error);
+    logger.error("Error en login:", error);
     res.status(500).json({ error: "Error en el servidor al iniciar sesión" });
   }
 };
@@ -82,7 +83,7 @@ export const register = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    console.error("Error en registro:", error);
+    logger.error("Error en registro:", error);
     res.status(500).json({ error: "Error en el servidor al registrar el usuario" });
   }
 };
@@ -118,7 +119,7 @@ export const refresh = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    console.error("Error en refresh:", error);
+    logger.error("Error en refresh:", error);
     res.status(500).json({ error: "Error al refrescar el token" });
   }
 };
@@ -154,7 +155,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    console.error("Error en forgot-password:", error);
+    logger.error("Error en forgot-password:", error);
     res.status(500).json({ error: "Error al solicitar recuperación de contraseña" });
   }
 };
@@ -191,7 +192,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    console.error("Error en reset-password:", error);
+    logger.error("Error en reset-password:", error);
     res.status(500).json({ error: "Error al restablecer la contraseña" });
   }
 };
