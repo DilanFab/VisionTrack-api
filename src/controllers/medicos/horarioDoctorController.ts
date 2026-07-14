@@ -1,11 +1,26 @@
 import { Request, Response } from "express";
 import prisma from "../../config/prisma";
+import { getPagination, paginatedResponse } from "../../utils/pagination";
+import { buildIntFilter, buildEstadoFilter } from "../../utils/filters";
 
 // GET /api/horarios-doctor
 export const getHorariosDoctor = async (req: Request, res: Response) => {
   try {
-    const horarios = await prisma.tbl_horario_doctor.findMany();
-    res.json(horarios);
+    const { page, limit, skip } = getPagination(req.query as { page?: string; limit?: string });
+    const { doctor_id, horario_doctor_estado } = req.query as Record<string, string>;
+
+    const where: Record<string, unknown> = {};
+    const doctorFilter = buildIntFilter(doctor_id);
+    if (doctorFilter) where.doctor_id = doctorFilter;
+    const estadoFilter = buildEstadoFilter(horario_doctor_estado);
+    if (estadoFilter) where.horario_doctor_estado = estadoFilter;
+
+    const [horarios, total] = await Promise.all([
+      prisma.tbl_horario_doctor.findMany({ where, skip, take: limit }),
+      prisma.tbl_horario_doctor.count({ where }),
+    ]);
+
+    res.json(paginatedResponse(horarios, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: "Error al obtener horarios de doctores" });
   }

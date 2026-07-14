@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { errorHandler } from "./middlewares/errorHandler";
 import { generalLimiter } from "./middlewares/rateLimit";
+import { iniciarRecordatorioCitas } from "./jobs/recordatorioCitas";
 
 // Gestión de Usuarios
 import generoRoutes from "./routes/usuarios/generoRoutes";
@@ -30,6 +31,8 @@ import estadoCitaRoutes from "./routes/citas/estadoCitaRoutes";
 import citaRoutes from "./routes/citas/citaRoutes";
 // App Móvil
 import pacienteMovilRoutes from "./routes/movil/pacienteRoutes";
+// Notificaciones
+import notificacionesRoutes from "./routes/notificacionesRoutes";
 
 dotenv.config();
 
@@ -81,6 +84,8 @@ app.use("/api/estados-cita", estadoCitaRoutes);
 app.use("/api/citas", citaRoutes);
 // App Móvil
 app.use("/api/movil", pacienteMovilRoutes);
+// Notificaciones
+app.use("/api/notificaciones", notificacionesRoutes);
 
 // Manejador global de errores (debe ir último)
 app.use(errorHandler);
@@ -89,6 +94,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  iniciarRecordatorioCitas();
 });
 
 export default app;

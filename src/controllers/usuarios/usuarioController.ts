@@ -1,22 +1,35 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import prisma from "../../config/prisma";
+import { getPagination, paginatedResponse } from "../../utils/pagination";
+import { buildEstadoFilter } from "../../utils/filters";
 
 // GET /api/usuarios
 export const getUsuarios = async (req: Request, res: Response) => {
   try {
-    const usuarios = await prisma.tbl_usuario.findMany({
-      select: {
-        usuario_id: true,
-        persona_id: true,
-        usuario_imagen: true,
-        usuario_nombre: true,
-        usuario_intentos: true,
-        usuario_cambiar_contrasena: true,
-        usuario_estado: true,
-      },
-    });
-    res.json(usuarios);
+    const { page, limit, skip } = getPagination(req.query as { page?: string; limit?: string });
+    const { usuario_estado } = req.query as Record<string, string>;
+
+    const where: Record<string, unknown> = {};
+    const estadoFilter = buildEstadoFilter(usuario_estado);
+    if (estadoFilter) where.usuario_estado = estadoFilter;
+
+    const select = {
+      usuario_id: true,
+      persona_id: true,
+      usuario_imagen: true,
+      usuario_nombre: true,
+      usuario_intentos: true,
+      usuario_cambiar_contrasena: true,
+      usuario_estado: true,
+    };
+
+    const [usuarios, total] = await Promise.all([
+      prisma.tbl_usuario.findMany({ where, select, skip, take: limit }),
+      prisma.tbl_usuario.count({ where }),
+    ]);
+
+    res.json(paginatedResponse(usuarios, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: "Error al obtener usuarios" });
   }

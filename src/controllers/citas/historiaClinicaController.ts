@@ -1,11 +1,26 @@
 import { Request, Response } from "express";
 import prisma from "../../config/prisma";
+import { getPagination, paginatedResponse } from "../../utils/pagination";
+import { buildEstadoFilter, buildIntFilter } from "../../utils/filters";
 
 // GET /api/historias-clinicas
 export const getHistoriasClinicas = async (req: Request, res: Response) => {
   try {
-    const historias = await prisma.tbl_historia_clinica.findMany();
-    res.json(historias);
+    const { page, limit, skip } = getPagination(req.query as { page?: string; limit?: string });
+    const { historia_clinica_estado, paciente_id } = req.query as Record<string, string>;
+
+    const where: Record<string, unknown> = {};
+    const estadoFilter = buildEstadoFilter(historia_clinica_estado);
+    if (estadoFilter) where.historia_clinica_estado = estadoFilter;
+    const pacienteFilter = buildIntFilter(paciente_id);
+    if (pacienteFilter) where.paciente_id = pacienteFilter;
+
+    const [historias, total] = await Promise.all([
+      prisma.tbl_historia_clinica.findMany({ where, skip, take: limit }),
+      prisma.tbl_historia_clinica.count({ where }),
+    ]);
+
+    res.json(paginatedResponse(historias, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: "Error al obtener historias clínicas" });
   }

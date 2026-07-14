@@ -25,13 +25,14 @@ export const login = async (req: Request, res: Response) => {
 
     const { email, password } = parsed.data;
 
+    const INTENTOS_MAXIMOS = 5;
+
     // Buscar al usuario a través de la relación de persona_correo
     const usuario = await prisma.tbl_usuario.findFirst({
       where: {
         persona: {
           persona_correo: email,
         },
-        usuario_estado: "A",
       },
       include: {
         persona: true,
@@ -51,11 +52,39 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
 
+    // Verificar si la cuenta está bloqueada
+    if (usuario.usuario_estado === "I") {
+      res.status(423).json({ error: "Cuenta bloqueada. Contacta al administrador." });
+      return;
+    }
+
     // Verificar contraseña
     const contrasenaValida = await bcrypt.compare(password, usuario.usuario_contrasena);
     if (!contrasenaValida) {
-      res.status(401).json({ error: "Credenciales incorrectas" });
+      const nuevosIntentos = usuario.usuario_intentos + 1;
+      const data: { usuario_intentos: number; usuario_estado?: string } = {
+        usuario_intentos: nuevosIntentos,
+      };
+      if (nuevosIntentos >= INTENTOS_MAXIMOS) {
+        data.usuario_estado = "I";
+      }
+      await prisma.tbl_usuario.update({
+        where: { usuario_id: usuario.usuario_id },
+        data,
+      });
+      const msg = nuevosIntentos >= INTENTOS_MAXIMOS
+        ? "Cuenta bloqueada por exceso de intentos. Contacta al administrador."
+        : `Credenciales incorrectas. Te quedan ${INTENTOS_MAXIMOS - nuevosIntentos} intentos.`;
+      res.status(401).json({ error: msg });
       return;
+    }
+
+    // Login exitoso: reiniciar intentos
+    if (usuario.usuario_intentos > 0) {
+      await prisma.tbl_usuario.update({
+        where: { usuario_id: usuario.usuario_id },
+        data: { usuario_intentos: 0 },
+      });
     }
 
     // Extraer los roles asignados

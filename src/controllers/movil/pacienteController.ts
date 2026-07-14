@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import prisma from "../../config/prisma";
 import { existeConflictoDeHorario } from "../citas/citaController";
+import { getPagination, paginatedResponse } from "../../utils/pagination";
 
 const DIAS_SEMANA = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
 
@@ -107,6 +108,8 @@ export const getDisponibilidad = async (req: Request, res: Response) => {
 // GET /api/movil/mis-citas
 export const getMisCitas = async (req: Request, res: Response) => {
   try {
+    const { page, limit, skip } = getPagination(req.query as { page?: string; limit?: string });
+
     const perfil = await getPerfilPaciente(req.usuario!.usuario_id);
     if (!perfil) {
       res.status(404).json({ error: "Perfil de paciente no encontrado" });
@@ -119,13 +122,14 @@ export const getMisCitas = async (req: Request, res: Response) => {
       return;
     }
 
-    const citas = await prisma.tbl_cita.findMany({
-      where: { historia_clinica_id: hc.historia_clinica_id },
-      include: citaInclude,
-      orderBy: { cita_fecha: "desc" },
-    });
+    const where = { historia_clinica_id: hc.historia_clinica_id };
 
-    res.json(citas);
+    const [citas, total] = await Promise.all([
+      prisma.tbl_cita.findMany({ where, include: citaInclude, skip, take: limit, orderBy: { cita_fecha: "desc" } }),
+      prisma.tbl_cita.count({ where }),
+    ]);
+
+    res.json(paginatedResponse(citas, total, page, limit));
   } catch (error) {
     console.error("Error al obtener citas del paciente:", error);
     res.status(500).json({ error: "Error al obtener las citas" });

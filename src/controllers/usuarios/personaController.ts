@@ -1,11 +1,29 @@
 import { Request, Response } from "express";
 import prisma from "../../config/prisma";
+import { getPagination, paginatedResponse } from "../../utils/pagination";
+import { buildSearchFilter } from "../../utils/filters";
 
 // GET /api/personas
 export const getPersonas = async (req: Request, res: Response) => {
   try {
-    const personas = await prisma.tbl_persona.findMany();
-    res.json(personas);
+    const { page, limit, skip } = getPagination(req.query as { page?: string; limit?: string });
+    const { search } = req.query as Record<string, string>;
+
+    const where: Record<string, unknown> = {};
+    const searchFilters = buildSearchFilter(search, [
+      "persona_primer_nombre",
+      "persona_primer_apellido",
+      "persona_cedula",
+      "persona_correo",
+    ]);
+    if (searchFilters) where.OR = searchFilters;
+
+    const [personas, total] = await Promise.all([
+      prisma.tbl_persona.findMany({ where, skip, take: limit }),
+      prisma.tbl_persona.count({ where }),
+    ]);
+
+    res.json(paginatedResponse(personas, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: "Error al obtener personas" });
   }

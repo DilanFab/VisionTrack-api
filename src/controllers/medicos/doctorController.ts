@@ -1,11 +1,26 @@
 import { Request, Response } from "express";
 import prisma from "../../config/prisma";
+import { getPagination, paginatedResponse } from "../../utils/pagination";
+import { buildEstadoFilter, buildIntFilter } from "../../utils/filters";
 
 // GET /api/doctores
 export const getDoctores = async (req: Request, res: Response) => {
   try {
-    const doctores = await prisma.tbl_doctor.findMany();
-    res.json(doctores);
+    const { page, limit, skip } = getPagination(req.query as { page?: string; limit?: string });
+    const { especialidad_medica_id, doctor_estado } = req.query as Record<string, string>;
+
+    const where: Record<string, unknown> = {};
+    const espFilter = buildIntFilter(especialidad_medica_id);
+    if (espFilter) where.especialidad_medica_id = espFilter;
+    const estadoFilter = buildEstadoFilter(doctor_estado);
+    if (estadoFilter) where.doctor_estado = estadoFilter;
+
+    const [doctores, total] = await Promise.all([
+      prisma.tbl_doctor.findMany({ where, skip, take: limit }),
+      prisma.tbl_doctor.count({ where }),
+    ]);
+
+    res.json(paginatedResponse(doctores, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: "Error al obtener doctores" });
   }

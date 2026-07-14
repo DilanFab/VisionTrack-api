@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
 import prisma from "../../config/prisma";
+import { getPagination, paginatedResponse } from "../../utils/pagination";
+import { buildSearchFilter } from "../../utils/filters";
 
 const ROL_PACIENTE = "Paciente";
 const PREFIJO_HISTORIA_CLINICA = "HC-";
@@ -39,10 +41,29 @@ const pacienteCompletoInclude = {
 // GET /api/pacientes-completos
 export const getPacientesCompletos = async (req: Request, res: Response) => {
   try {
-    const pacientes = await prisma.tbl_historia_clinica.findMany({
-      include: pacienteCompletoInclude,
-    });
-    res.json(pacientes);
+    const { page, limit, skip } = getPagination(req.query as { page?: string; limit?: string });
+    const { search } = req.query as Record<string, string>;
+
+    const where: Record<string, unknown> = {};
+    const searchFilters = buildSearchFilter(search, [
+      "persona_primer_nombre",
+      "persona_primer_apellido",
+      "persona_cedula",
+    ]);
+    if (searchFilters) {
+      where.perfil = {
+        usuario: {
+          persona: { OR: searchFilters },
+        },
+      };
+    }
+
+    const [pacientes, total] = await Promise.all([
+      prisma.tbl_historia_clinica.findMany({ where, include: pacienteCompletoInclude, skip, take: limit }),
+      prisma.tbl_historia_clinica.count({ where }),
+    ]);
+
+    res.json(paginatedResponse(pacientes, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: "Error al obtener los pacientes" });
   }

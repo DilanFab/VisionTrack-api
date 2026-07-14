@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import prisma from "../../config/prisma";
+import { getPagination, paginatedResponse } from "../../utils/pagination";
+import { buildDateFilter, buildIntFilter } from "../../utils/filters";
 
 const ESTADO_CITA_DEFECTO = "Programada";
 const ESTADO_CITA_CANCELADA = "Cancelada";
@@ -53,8 +55,23 @@ export const existeConflictoDeHorario = async (
 // GET /api/citas
 export const getCitas = async (req: Request, res: Response) => {
   try {
-    const citas = await prisma.tbl_cita.findMany({ include: citaInclude });
-    res.json(citas);
+    const { page, limit, skip } = getPagination(req.query as { page?: string; limit?: string });
+    const { fecha, estado_cita_id, doctor_id } = req.query as Record<string, string>;
+
+    const where: Record<string, unknown> = {};
+    const fechaFilter = buildDateFilter(fecha);
+    if (fechaFilter) where.cita_fecha = fechaFilter;
+    const estadoFilter = buildIntFilter(estado_cita_id);
+    if (estadoFilter) where.estado_cita_id = estadoFilter;
+    const doctorFilter = buildIntFilter(doctor_id);
+    if (doctorFilter) where.horario_doctor = { doctor_id: doctorFilter };
+
+    const [citas, total] = await Promise.all([
+      prisma.tbl_cita.findMany({ where, include: citaInclude, skip, take: limit, orderBy: { cita_fecha: "desc" } }),
+      prisma.tbl_cita.count({ where }),
+    ]);
+
+    res.json(paginatedResponse(citas, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: "Error al obtener citas" });
   }
