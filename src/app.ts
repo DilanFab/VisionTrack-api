@@ -94,11 +94,13 @@ app.use("/api/docs", docsRoutes);
 // Manejador global de errores (debe ir último)
 app.use(errorHandler);
 
-// Puerto
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-  iniciarRecordatorioCitas();
-});
+// Puerto (no arrancar en tests para no conflictos de puerto)
+if (process.env.NODE_ENV !== "test") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    iniciarRecordatorioCitas();
+  });
+}
 
 export default app;

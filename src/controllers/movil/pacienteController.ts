@@ -70,7 +70,7 @@ export const getDisponibilidad = async (req: Request, res: Response) => {
 
     res.json({ fecha, doctor_id: Number(doctor_id), dia: diaNombre, disponibles });
   } catch (error) {
-    logger.error("Error al obtener disponibilidad:", error);
+    logger.error({ err: error }, "Error al obtener disponibilidad");
     res.status(500).json({ error: "Error al obtener disponibilidad" });
   }
 };
@@ -109,7 +109,7 @@ export const getMisCitas = async (req: Request, res: Response) => {
     const result = await citaService.listarPorPaciente(hc.historia_clinica_id, req.query as any);
     res.json(result);
   } catch (error) {
-    logger.error("Error al obtener citas del paciente:", error);
+    logger.error({ err: error }, "Error al obtener citas del paciente");
     res.status(500).json({ error: "Error al obtener las citas" });
   }
 };
@@ -171,11 +171,11 @@ export const agendarCita = async (req: Request, res: Response) => {
 
     res.status(201).json(cita);
   } catch (error: any) {
-    if (error.message?.includes("conflict")) {
+    if (error.message?.includes("cita agendada")) {
       res.status(400).json({ error: error.message });
       return;
     }
-    logger.error("Error al agendar cita:", error);
+    logger.error({ err: error }, "Error al agendar cita");
     res.status(500).json({ error: "Error al agendar la cita" });
   }
 };
@@ -230,7 +230,7 @@ export const cancelarCita = async (req: Request, res: Response) => {
     const citaActualizada = await citaService.cancelar(Number(id));
     res.json({ message: "Cita cancelada correctamente", cita: citaActualizada });
   } catch (error) {
-    logger.error("Error al cancelar cita:", error);
+    logger.error({ err: error }, "Error al cancelar cita");
     res.status(500).json({ error: "Error al cancelar la cita" });
   }
 };

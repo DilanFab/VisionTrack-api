@@ -16,7 +16,7 @@ export const errorHandler = (
   const message = err.isOperational ? err.message : "Error interno del servidor";
 
   if (!err.isOperational) {
-    logger.error("ERROR NO OPERACIONAL:", err);
+    logger.error({ err }, "ERROR NO OPERACIONAL");
   }
 
   res.status(statusCode).json({

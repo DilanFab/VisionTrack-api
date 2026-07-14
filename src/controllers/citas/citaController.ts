@@ -81,7 +81,7 @@ export const createCita = async (req: Request, res: Response) => {
     const cita = await citaService.crear(req.body);
     res.status(201).json(cita);
   } catch (error: any) {
-    if (error.message?.includes("conflict")) {
+    if (error.message?.includes("cita agendada")) {
       res.status(400).json({ error: error.message });
       return;
     }
@@ -117,7 +117,7 @@ export const updateCita = async (req: Request, res: Response) => {
     const cita = await citaService.actualizar(Number(req.params.id), req.body);
     res.json(cita);
   } catch (error: any) {
-    if (error.message?.includes("conflict")) {
+    if (error.message?.includes("cita agendada")) {
       res.status(400).json({ error: error.message });
       return;
     }

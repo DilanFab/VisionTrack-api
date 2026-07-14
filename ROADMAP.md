@@ -42,7 +42,7 @@ Cerrar las vulnerabilidades críticas antes de producción.
 
 ---
 
-## Fase 3 — Calidad 🟡 MEDIA
+## Fase 3 — Calidad ✅ LISTO
 
 Profesionalizar el código, hacerlo mantenible y testeable.
 
@@ -50,10 +50,10 @@ Profesionalizar el código, hacerlo mantenible y testeable.
 - [x] Refactor: extraer includes/selects de Prisma a archivos compartidos
 - [x] Setup de Jest (ts-jest) + jest-mock-extended
 - [x] Tests unitarios para servicios (75 tests en 6 archivos)
-- [ ] Tests de integración para endpoints críticos (auth, citas)
+- [x] Tests de integración para endpoints críticos (auth, citas) — 21 tests con supertest
 - [x] Documentación de API con Swagger/OpenAPI (UI en `/api/docs`)
-- [ ] Script `npm run migrate:deploy` para producción
-- [ ] Mejorar logging (pino o winston en vez de console.error)
+- [x] Script `npm run migrate:deploy` para producción
+- [x] Mejorar logging (pino con logs estructurados JSON)
 
 ---
 

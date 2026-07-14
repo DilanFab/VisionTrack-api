@@ -38,7 +38,7 @@ export const login = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    logger.error("Error en login:", error);
+    logger.error({ err: error }, "Error en login");
     res.status(500).json({ error: "Error en el servidor al iniciar sesión" });
   }
 };
@@ -83,7 +83,7 @@ export const register = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    logger.error("Error en registro:", error);
+    logger.error({ err: error }, "Error en registro");
     res.status(500).json({ error: "Error en el servidor al registrar el usuario" });
   }
 };
@@ -119,7 +119,7 @@ export const refresh = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    logger.error("Error en refresh:", error);
+    logger.error({ err: error }, "Error en refresh");
     res.status(500).json({ error: "Error al refrescar el token" });
   }
 };
@@ -155,7 +155,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    logger.error("Error en forgot-password:", error);
+    logger.error({ err: error }, "Error en forgot-password");
     res.status(500).json({ error: "Error al solicitar recuperación de contraseña" });
   }
 };
@@ -192,7 +192,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       res.status(error.status).json({ error: error.message });
       return;
     }
-    logger.error("Error en reset-password:", error);
+    logger.error({ err: error }, "Error en reset-password");
     res.status(500).json({ error: "Error al restablecer la contraseña" });
   }
 };

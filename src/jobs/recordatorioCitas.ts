@@ -94,11 +94,11 @@ export const iniciarRecordatorioCitas = () => {
 
           console.log(`[CRON] Notificación enviada para cita ${cita.cita_id}`);
         } catch (error) {
-          logger.error(`[CRON] Error al enviar notificación para cita ${cita.cita_id}:`, error);
+          logger.error({ err: error }, `[CRON] Error al enviar notificación para cita ${cita.cita_id}`);
         }
       }
     } catch (error) {
-      logger.error("[CRON] Error en job de recordatorios:", error);
+      logger.error({ err: error }, "[CRON] Error en job de recordatorios");
     }
   });
 
