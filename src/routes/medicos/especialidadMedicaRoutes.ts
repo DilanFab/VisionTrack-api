@@ -12,8 +12,8 @@ const router = Router();
 
 router.get("/", getEspecialidadesMedicas);
 router.get("/:id", getEspecialidadMedicaById);
-router.post("/", verifyToken, authorize("Admin"), createEspecialidadMedica);
-router.put("/:id", verifyToken, authorize("Admin"), updateEspecialidadMedica);
-router.delete("/:id", verifyToken, authorize("Admin"), deleteEspecialidadMedica);
+router.post("/", verifyToken, authorize("Administrador"), createEspecialidadMedica);
+router.put("/:id", verifyToken, authorize("Administrador"), updateEspecialidadMedica);
+router.delete("/:id", verifyToken, authorize("Administrador"), deleteEspecialidadMedica);
 
 export default router;

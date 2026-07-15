@@ -88,6 +88,8 @@ model tbl_permiso {
 
   rol            tbl_rol    @relation(fields: [rol_id], references: [rol_id], onDelete: Cascade, onUpdate: Cascade)
   menu           tbl_menu   @relation(fields: [menu_id], references: [menu_id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([rol_id, menu_id])
 }
 
 model tbl_perfil {

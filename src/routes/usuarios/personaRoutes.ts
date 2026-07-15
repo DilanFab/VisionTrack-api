@@ -10,10 +10,10 @@ import {
 
 const router = Router();
 
-router.get("/", verifyToken, authorize("Admin"), getPersonas);
-router.get("/:id", verifyToken, authorize("Admin"), getPersonaById);
-router.post("/", verifyToken, authorize("Admin"), createPersona);
-router.put("/:id", verifyToken, authorize("Admin"), updatePersona);
-router.delete("/:id", verifyToken, authorize("Admin"), deletePersona);
+router.get("/", verifyToken, authorize("Administrador"), getPersonas);
+router.get("/:id", verifyToken, authorize("Administrador"), getPersonaById);
+router.post("/", verifyToken, authorize("Administrador"), createPersona);
+router.put("/:id", verifyToken, authorize("Administrador"), updatePersona);
+router.delete("/:id", verifyToken, authorize("Administrador"), deletePersona);
 
 export default router;

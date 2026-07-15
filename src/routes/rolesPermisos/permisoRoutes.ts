@@ -11,11 +11,11 @@ import {
 
 const router = Router();
 
-router.get("/", verifyToken, authorize("Admin"), getPermisos);
-router.put("/rol/:id", verifyToken, authorize("Admin"), setPermisosDeRol);
-router.get("/:id", verifyToken, authorize("Admin"), getPermisoById);
-router.post("/", verifyToken, authorize("Admin"), createPermiso);
-router.put("/:id", verifyToken, authorize("Admin"), updatePermiso);
-router.delete("/:id", verifyToken, authorize("Admin"), deletePermiso);
+router.get("/", verifyToken, authorize("Administrador"), getPermisos);
+router.put("/rol/:id", verifyToken, authorize("Administrador"), setPermisosDeRol);
+router.get("/:id", verifyToken, authorize("Administrador"), getPermisoById);
+router.post("/", verifyToken, authorize("Administrador"), createPermiso);
+router.put("/:id", verifyToken, authorize("Administrador"), updatePermiso);
+router.delete("/:id", verifyToken, authorize("Administrador"), deletePermiso);
 
 export default router;

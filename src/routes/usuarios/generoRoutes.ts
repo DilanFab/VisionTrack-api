@@ -12,8 +12,8 @@ const router = Router();
 
 router.get("/", getGeneros);
 router.get("/:id", getGeneroById);
-router.post("/", verifyToken, authorize("Admin"), createGenero);
-router.put("/:id", verifyToken, authorize("Admin"), updateGenero);
-router.delete("/:id", verifyToken, authorize("Admin"), deleteGenero);
+router.post("/", verifyToken, authorize("Administrador"), createGenero);
+router.put("/:id", verifyToken, authorize("Administrador"), updateGenero);
+router.delete("/:id", verifyToken, authorize("Administrador"), deleteGenero);
 
 export default router;

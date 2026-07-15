@@ -12,8 +12,8 @@ const router = Router();
 
 router.get("/", getEstadosCita);
 router.get("/:id", getEstadoCitaById);
-router.post("/", verifyToken, authorize("Admin"), createEstadoCita);
-router.put("/:id", verifyToken, authorize("Admin"), updateEstadoCita);
-router.delete("/:id", verifyToken, authorize("Admin"), deleteEstadoCita);
+router.post("/", verifyToken, authorize("Administrador"), createEstadoCita);
+router.put("/:id", verifyToken, authorize("Administrador"), updateEstadoCita);
+router.delete("/:id", verifyToken, authorize("Administrador"), deleteEstadoCita);
 
 export default router;

@@ -9,9 +9,9 @@ import {
 
 const router = Router();
 
-router.get("/", verifyToken, authorize("Admin"), getUsuariosCompletos);
-router.post("/", verifyToken, authorize("Admin"), createUsuarioCompleto);
-router.put("/:id", verifyToken, authorize("Admin"), updateUsuarioCompleto);
-router.delete("/:id", verifyToken, authorize("Admin"), deleteUsuarioCompleto);
+router.get("/", verifyToken, authorize("Administrador"), getUsuariosCompletos);
+router.post("/", verifyToken, authorize("Administrador"), createUsuarioCompleto);
+router.put("/:id", verifyToken, authorize("Administrador"), updateUsuarioCompleto);
+router.delete("/:id", verifyToken, authorize("Administrador"), deleteUsuarioCompleto);
 
 export default router;

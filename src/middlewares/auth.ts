@@ -28,7 +28,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
       usuario_id: 1,
       usuario_nombre: "bypass",
       email: "bypass@test.com",
-      roles: ["Admin"],
+      roles: ["Administrador"],
     };
     return next();
   }

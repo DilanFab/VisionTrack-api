@@ -93,18 +93,18 @@ Dos middlewares en `src/middlewares/auth.ts`:
 | `GET /api/estados-cita*` | Público | — |
 | `POST /api/uploads/imagen-paciente` | Público | — |
 | `POST /api/uploads/imagen` | Autenticado | `verifyToken` |
-| CRUD `/api/generos` (POST/PUT/DELETE) | Admin | `verifyToken` + `authorize("Admin")` |
-| CRUD `/api/especialidades-medicas` (POST/PUT/DELETE) | Admin | `verifyToken` + `authorize("Admin")` |
-| CRUD `/api/estados-cita` (POST/PUT/DELETE) | Admin | `verifyToken` + `authorize("Admin")` |
-| CRUD `/api/personas`, `/api/usuarios`, `/api/menus`, `/api/roles` | Admin | `verifyToken` + `authorize("Admin")` |
-| CRUD `/api/permisos*`, `/api/perfiles*` | Admin | `verifyToken` + `authorize("Admin")` |
-| CRUD `/api/usuarios-completos*` | Admin | `verifyToken` + `authorize("Admin")` |
-| CRUD `/api/doctores-completos*` | Admin | `verifyToken` + `authorize("Admin")` |
-| CRUD `/api/pacientes-completos*` | Admin | `verifyToken` + `authorize("Admin")` |
-| CRUD `/api/doctores*` | Admin + Médico | `verifyToken` + `authorize("Admin", "Medico")` |
-| CRUD `/api/horarios-doctor*` | Admin + Médico | `verifyToken` + `authorize("Admin", "Medico")` |
-| CRUD `/api/historias-clinicas*` | Admin + Médico | `verifyToken` + `authorize("Admin", "Medico")` |
-| CRUD `/api/citas*` | Admin + Médico | `verifyToken` + `authorize("Admin", "Medico")` |
+| CRUD `/api/generos` (POST/PUT/DELETE) | Admin | `verifyToken` + `authorize("Administrador")` |
+| CRUD `/api/especialidades-medicas` (POST/PUT/DELETE) | Admin | `verifyToken` + `authorize("Administrador")` |
+| CRUD `/api/estados-cita` (POST/PUT/DELETE) | Admin | `verifyToken` + `authorize("Administrador")` |
+| CRUD `/api/personas`, `/api/usuarios`, `/api/menus`, `/api/roles` | Admin | `verifyToken` + `authorize("Administrador")` |
+| CRUD `/api/permisos*`, `/api/perfiles*` | Admin | `verifyToken` + `authorize("Administrador")` |
+| CRUD `/api/usuarios-completos*` | Admin | `verifyToken` + `authorize("Administrador")` |
+| CRUD `/api/doctores-completos*` | Admin | `verifyToken` + `authorize("Administrador")` |
+| CRUD `/api/pacientes-completos*` | Admin | `verifyToken` + `authorize("Administrador")` |
+| CRUD `/api/doctores*` | Admin + Médico | `verifyToken` + `authorize("Administrador", "Medico")` |
+| CRUD `/api/horarios-doctor*` | Admin + Médico | `verifyToken` + `authorize("Administrador", "Medico")` |
+| CRUD `/api/historias-clinicas*` | Admin + Médico | `verifyToken` + `authorize("Administrador", "Medico")` |
+| CRUD `/api/citas*` | Admin + Médico | `verifyToken` + `authorize("Administrador", "Medico")` |
 
 ### Archivos y carpetas
 - Todo en español (nombres de tablas, controladores, rutas, variables).
@@ -133,7 +133,7 @@ Dos middlewares en `src/middlewares/auth.ts`:
 - **Secret**: `JWT_SECRET` obligatorio en `.env` (sin fallback hardcodeado).
 - Middlewares implementados: `verifyToken` + `authorize(...roles)` en `src/middlewares/auth.ts`.
 - Variable `AUTH_BYPASS=true` en `.env` para desarrollo — desactiva toda verificación.
-- IDs de rol hardcodeados: Admin=1, Medico=3, Paciente=4.
+- IDs de rol hardcodeados: Admin=1, Medico=3, Paciente=4. ⚠️ Estos IDs NO son fijos — en BD los roles son 17-20 tras seed. Usar lookup por `rol_nombre` siempre.
 - **Refresh tokens**: stateless JWT, endpoint `POST /api/auth/refresh`.
 - **Recuperación de contraseña**: `POST /api/auth/forgot-password` (envía email con token) + `POST /api/auth/reset-password` (verifica token y actualiza contraseña). Token en `tbl_reset_token`, hash SHA-256, expira en 1h, un solo uso.
 

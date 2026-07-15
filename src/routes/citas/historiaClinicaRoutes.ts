@@ -10,10 +10,10 @@ import {
 
 const router = Router();
 
-router.get("/", verifyToken, authorize("Admin", "Medico"), getHistoriasClinicas);
-router.get("/:id", verifyToken, authorize("Admin", "Medico"), getHistoriaClinicaById);
-router.post("/", verifyToken, authorize("Admin", "Medico"), createHistoriaClinica);
-router.put("/:id", verifyToken, authorize("Admin", "Medico"), updateHistoriaClinica);
-router.delete("/:id", verifyToken, authorize("Admin", "Medico"), deleteHistoriaClinica);
+router.get("/", verifyToken, authorize("Administrador", "Medico"), getHistoriasClinicas);
+router.get("/:id", verifyToken, authorize("Administrador", "Medico"), getHistoriaClinicaById);
+router.post("/", verifyToken, authorize("Administrador", "Medico"), createHistoriaClinica);
+router.put("/:id", verifyToken, authorize("Administrador", "Medico"), updateHistoriaClinica);
+router.delete("/:id", verifyToken, authorize("Administrador", "Medico"), deleteHistoriaClinica);
 
 export default router;

@@ -138,11 +138,14 @@ export const register = async (body: unknown) => {
       },
     });
 
-    const rolId = data.tipo === "doctor" ? 3 : 4;
+    const rolNombre = data.tipo === "doctor" ? "Médico" : "Paciente";
+    const rol = await tx.tbl_rol.findUnique({ where: { rol_nombre: rolNombre } });
+    if (!rol) throw new Error(`Rol "${rolNombre}" no encontrado en la base de datos`);
+
     const perfil = await tx.tbl_perfil.create({
       data: {
         usuario_id: usuario.usuario_id,
-        rol_id: rolId,
+        rol_id: rol.rol_id,
         perfil_estado: "A",
       },
       include: { rol: true },

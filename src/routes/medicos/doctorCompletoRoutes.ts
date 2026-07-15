@@ -9,9 +9,9 @@ import {
 
 const router = Router();
 
-router.get("/", verifyToken, authorize("Admin"), getDoctoresCompletos);
-router.post("/", verifyToken, authorize("Admin"), createDoctorCompleto);
-router.put("/:id", verifyToken, authorize("Admin"), updateDoctorCompleto);
-router.delete("/:id", verifyToken, authorize("Admin"), deleteDoctorCompleto);
+router.get("/", verifyToken, authorize("Administrador"), getDoctoresCompletos);
+router.post("/", verifyToken, authorize("Administrador"), createDoctorCompleto);
+router.put("/:id", verifyToken, authorize("Administrador"), updateDoctorCompleto);
+router.delete("/:id", verifyToken, authorize("Administrador"), deleteDoctorCompleto);
 
 export default router;
