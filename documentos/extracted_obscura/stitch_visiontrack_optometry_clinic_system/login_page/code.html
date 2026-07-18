@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VisionTrack | Secure Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .glass-card {
+            backdrop-filter: blur(12px);
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glow-input:focus {
+            box-shadow: 0 0 8px 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .animated-gradient-bg {
+            background: linear-gradient(-45deg, #0b1326, #0f172a, #131b2e, #0b1326);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Medical crosshair decoration */
+        .reticle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 1px solid rgba(192, 193, 255, 0.3);
+        }
+    </style>
+<!-- Tailwind Config Execution -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#5516be",
+                    "on-surface": "#dae2fd",
+                    "on-primary-fixed": "#07006c",
+                    "surface-container-low": "#131b2e",
+                    "primary": "#c0c1ff",
+                    "surface": "#0b1326",
+                    "inverse-primary": "#494bd6",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "surface-variant": "#2d3449",
+                    "on-tertiary-fixed": "#23005c",
+                    "primary-container": "#8083ff",
+                    "tertiary-fixed-dim": "#d0bcff",
+                    "primary-fixed": "#e1e0ff",
+                    "on-error": "#690005",
+                    "inverse-on-surface": "#283044",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "tertiary": "#d0bcff",
+                    "surface-bright": "#31394d",
+                    "surface-container-highest": "#2d3449",
+                    "on-primary-container": "#0d0096",
+                    "secondary": "#4edea3",
+                    "on-surface-variant": "#c7c4d7",
+                    "background": "#0b1326",
+                    "on-tertiary": "#3c0091",
+                    "outline": "#908fa0",
+                    "on-secondary-fixed": "#002113",
+                    "on-primary": "#1000a9",
+                    "error-container": "#93000a",
+                    "surface-dim": "#0b1326",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface-container-lowest": "#060e20",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-background": "#dae2fd",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-secondary": "#003824",
+                    "error": "#ffb4ab",
+                    "secondary-container": "#00a572",
+                    "outline-variant": "#464554",
+                    "inverse-surface": "#dae2fd",
+                    "tertiary-fixed": "#e9ddff",
+                    "on-tertiary-container": "#340080",
+                    "tertiary-container": "#a078ff",
+                    "on-error-container": "#ffdad6",
+                    "surface-tint": "#c0c1ff",
+                    "surface-container-high": "#222a3d",
+                    "surface-container": "#171f33",
+                    "on-secondary-container": "#00311f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "40px",
+                    "container-max": "1440px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "margin-mobile": "16px",
+                    "unit": "4px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-md": ["JetBrains Mono"],
+                    "label-sm": ["JetBrains Mono"],
+                    "display-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary/30 min-h-screen flex items-center justify-center animated-gradient-bg overflow-hidden relative">
+<!-- Background Decorative Animation -->
+<div class="absolute inset-0 z-0 pointer-events-none opacity-20">
+
+</div>
+<!-- UI Background Blobs -->
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-secondary/10 blur-[100px] rounded-full"></div>
+<!-- Login Container -->
+<main class="z-10 w-full max-w-md px-6 py-12">
+<div class="glass-card rounded-xl p-8 md:p-10 relative overflow-hidden">
+<!-- Reticle Decorations -->
+<div class="reticle top-0 left-0 border-r-0 border-b-0 rounded-tl-xl"></div>
+<div class="reticle top-0 right-0 border-l-0 border-b-0 rounded-tr-xl"></div>
+<div class="reticle bottom-0 left-0 border-r-0 border-t-0 rounded-bl-xl"></div>
+<div class="reticle bottom-0 right-0 border-l-0 border-t-0 rounded-br-xl"></div>
+<!-- Header Section -->
+<header class="text-center mb-10">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6 border border-primary/20">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">visibility</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight">VisionTrack</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Clinical Precision. Patient Centricity.</p>
+</header>
+<!-- Login Form -->
+<form action="#" class="space-y-6" method="POST">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface-variant ml-1" for="email">ADMINISTRATOR EMAIL</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline group-focus-within:text-primary transition-colors">alternate_email</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface font-body-md placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all glow-input" id="email" name="email" placeholder="admin@visiontrack.health" required="" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center ml-1">
+<label class="block font-label-md text-label-md text-on-surface-variant" for="password">PASSWORD</label>
+<a class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors" href="#">FORGOT?</a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline group-focus-within:text-primary transition-colors">lock</span>
+</div>
+<input class="block w-full pl-10 pr-12 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface font-body-md placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all glow-input" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-on-surface transition-colors" onclick="togglePassword()" type="button">
+<span class="material-symbols-outlined" id="pass-icon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember & Security Info -->
+<div class="flex items-center space-x-2">
+<input class="w-4 h-4 rounded border-outline-variant bg-surface-container text-primary focus:ring-primary" id="remember" type="checkbox"/>
+<label class="font-body-sm text-body-sm text-on-surface-variant" for="remember">Remember this workstation for 24 hours</label>
+</div>
+<!-- Submit Button -->
+<button class="w-full flex items-center justify-center py-4 px-6 rounded-lg bg-primary text-on-primary font-headline-md text-headline-md font-bold hover:bg-primary-container active:scale-[0.98] transition-all shadow-lg shadow-primary/20 group" type="submit">
+<span>Login</span>
+<span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</form>
+<!-- Footer / Security Message -->
+<footer class="mt-10 pt-6 border-t border-outline-variant/30 text-center">
+<div class="flex items-center justify-center space-x-4 text-outline mb-4">
+<div class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-sm">security</span>
+<span class="font-label-sm text-label-sm">AES-256</span>
+</div>
+<div class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span class="font-label-sm text-label-sm">HIPAA COMPLIANT</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/60">
+                    Proprietary system for authorized medical personnel only. Unauthorized access is strictly prohibited and monitored.
+                </p>
+</footer>
+</div>
+<!-- System Status Bar (Ambient) -->
+<div class="mt-8 flex justify-center items-center space-x-6">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Server Operational</span>
+</div>
+<div class="flex items-center space-x-2 opacity-60">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">v4.2.1-stable</span>
+</div>
+</div>
+</main>
+<!-- Interactive Micro-interactions -->
+<script>
+        function togglePassword() {
+            const passInput = document.getElementById('password');
+            const passIcon = document.getElementById('pass-icon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                passIcon.textContent = 'visibility_off';
+            } else {
+                passInput.type = 'password';
+                passIcon.textContent = 'visibility';
+            }
+        }
+
+        // Subtle Mouse parallax for the glass card
+        document.addEventListener('mousemove', (e) => {
+            const card = document.querySelector('.glass-card');
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Form submission animation mock
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin">progress_activity</span><span class="ml-2">Verifying Credentials...</span>`;
+            btn.disabled = true;
+            btn.classList.add('opacity-80');
+            
+            setTimeout(() => {
+                btn.innerHTML = `<span class="material-symbols-outlined">check_circle</span><span class="ml-2">Access Granted</span>`;
+                btn.classList.remove('bg-primary');
+                btn.classList.add('bg-secondary', 'text-on-secondary');
+            }, 1800);
+        });
+    </script>
+</body></html>

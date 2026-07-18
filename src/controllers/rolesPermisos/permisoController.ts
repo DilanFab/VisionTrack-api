@@ -69,3 +69,30 @@ export const deletePermiso = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error al desactivar el permiso" });
   }
 };
+
+// PUT /api/permisos/rol/:id
+// Reemplaza por completo los permisos de un rol: borra físicamente los
+// existentes y crea uno nuevo por cada menu_id recibido, evitando duplicados.
+export const setPermisosDeRol = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { menu_ids } = req.body;
+    const rol_id = Number(id);
+
+    const permisos = await prisma.$transaction(async (tx) => {
+      await tx.tbl_permiso.deleteMany({ where: { rol_id } });
+
+      if (Array.isArray(menu_ids) && menu_ids.length > 0) {
+        await tx.tbl_permiso.createMany({
+          data: menu_ids.map((menu_id: number) => ({ rol_id, menu_id })),
+        });
+      }
+
+      return tx.tbl_permiso.findMany({ where: { rol_id } });
+    });
+
+    res.json(permisos);
+  } catch (error) {
+    res.status(500).json({ error: "Error al actualizar los permisos del rol" });
+  }
+};

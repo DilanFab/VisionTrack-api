@@ -107,12 +107,12 @@ model tbl_especialidad_medica {
   especialidad_medica_descripcion String @db.VarChar(500)
   especialidad_medica_estado      String @default("A") @db.Char(1)
 
-  doctor      tbl_doctor?
+  doctores    tbl_doctor[]
 }
 
 model tbl_doctor {
   doctor_id              Int                     @id @default(autoincrement())
-  especialidad_medica_id Int                     @unique
+  especialidad_medica_id Int
   perfil_id              Int                     @unique
   doctor_estado          String                  @default("A") @db.Char(1)
 

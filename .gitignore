@@ -3,3 +3,10 @@ node_modules
 .env
 
 /generated/prisma
+dist/
+
+# Archivos subidos por los usuarios (fotos de perfil, etc.)
+/uploads/*
+!/uploads/usuarios/
+/uploads/usuarios/*
+!/uploads/usuarios/.gitkeep

@@ -1,11 +1,15 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
 
 // Gestión de Usuarios
 import generoRoutes from "./routes/usuarios/generoRoutes";
 import personaRoutes from "./routes/usuarios/personaRoutes";
 import usuarioRoutes from "./routes/usuarios/usuarioRoutes";
+import usuarioCompletoRoutes from "./routes/usuarios/usuarioCompletoRoutes";
+import uploadRoutes from "./routes/usuarios/uploadRoutes";
+import authRoutes from "./routes/authRoutes";
 // Gestión de Roles y Permisos
 import menuRoutes from "./routes/rolesPermisos/menuRoutes";
 import rolRoutes from "./routes/rolesPermisos/rolRoutes";
@@ -14,9 +18,11 @@ import perfilRoutes from "./routes/rolesPermisos/perfilRoutes";
 // Gestión de Médicos
 import especialidadMedicaRoutes from "./routes/medicos/especialidadMedicaRoutes";
 import doctorRoutes from "./routes/medicos/doctorRoutes";
+import doctorCompletoRoutes from "./routes/medicos/doctorCompletoRoutes";
 import horarioDoctorRoutes from "./routes/medicos/horarioDoctorRoutes";
 // Gestión de Citas
 import historiaClinicaRoutes from "./routes/citas/historiaClinicaRoutes";
+import pacienteCompletoRoutes from "./routes/citas/pacienteCompletoRoutes";
 import estadoCitaRoutes from "./routes/citas/estadoCitaRoutes";
 import citaRoutes from "./routes/citas/citaRoutes";
 
@@ -28,6 +34,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
 // Ruta de prueba
 app.get("/", (req, res) => {
@@ -40,6 +47,9 @@ app.get("/", (req, res) => {
 app.use("/api/generos", generoRoutes);
 app.use("/api/personas", personaRoutes);
 app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/usuarios-completos", usuarioCompletoRoutes);
+app.use("/api/uploads", uploadRoutes);
+app.use("/api/auth", authRoutes);
 // Gestión de Roles y Permisos
 app.use("/api/menus", menuRoutes);
 app.use("/api/roles", rolRoutes);
@@ -48,9 +58,11 @@ app.use("/api/perfiles", perfilRoutes);
 // Gestión de Médicos
 app.use("/api/especialidades-medicas", especialidadMedicaRoutes);
 app.use("/api/doctores", doctorRoutes);
+app.use("/api/doctores-completos", doctorCompletoRoutes);
 app.use("/api/horarios-doctor", horarioDoctorRoutes);
 // Gestión de Citas
 app.use("/api/historias-clinicas", historiaClinicaRoutes);
+app.use("/api/pacientes-completos", pacienteCompletoRoutes);
 app.use("/api/estados-cita", estadoCitaRoutes);
 app.use("/api/citas", citaRoutes);
 
