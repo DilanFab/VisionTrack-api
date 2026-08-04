@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prisma";
-
-const JWT_SECRET = process.env.JWT_SECRET || "visiontrack-super-secret-key-change-in-production";
+import { JWT_SECRET } from "../config/jwt";
 
 export const login = async (req: Request, res: Response) => {
   try {

@@ -39,8 +39,8 @@ export const setHorariosPorDoctor = async (req: Request, res: Response) => {
           data: horarios.map((h: any) => ({
             doctor_id: Number(doctorId),
             horario_doctor_dia: h.horario_doctor_dia,
-            horario_doctor_inicio: new Date(`1970-01-01T${h.horario_doctor_inicio}`),
-            horario_doctor_fin: new Date(`1970-01-01T${h.horario_doctor_fin}`),
+            horario_doctor_inicio: new Date(`1970-01-01T${h.horario_doctor_inicio}Z`),
+            horario_doctor_fin: new Date(`1970-01-01T${h.horario_doctor_fin}Z`),
             horario_doctor_estado: "A",
           })),
         });
@@ -88,8 +88,8 @@ export const createHorarioDoctor = async (req: Request, res: Response) => {
       data: {
         doctor_id,
         horario_doctor_dia,
-        horario_doctor_inicio: new Date(`1970-01-01T${horario_doctor_inicio}`),
-        horario_doctor_fin: new Date(`1970-01-01T${horario_doctor_fin}`),
+        horario_doctor_inicio: new Date(`1970-01-01T${horario_doctor_inicio}Z`),
+        horario_doctor_fin: new Date(`1970-01-01T${horario_doctor_fin}Z`),
         horario_doctor_estado,
       },
     });
@@ -117,10 +117,10 @@ export const updateHorarioDoctor = async (req: Request, res: Response) => {
         doctor_id,
         horario_doctor_dia,
         horario_doctor_inicio: horario_doctor_inicio
-          ? new Date(`1970-01-01T${horario_doctor_inicio}`)
+          ? new Date(`1970-01-01T${horario_doctor_inicio}Z`)
           : undefined,
         horario_doctor_fin: horario_doctor_fin
-          ? new Date(`1970-01-01T${horario_doctor_fin}`)
+          ? new Date(`1970-01-01T${horario_doctor_fin}Z`)
           : undefined,
         horario_doctor_estado,
       },

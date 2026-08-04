@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import prisma from "../../config/prisma";
 
-const ROL_MEDICO = "Médico";
+const ROL_MEDICO = "Medico";
 
 const doctorCompletoInclude = {
   especialidad_medica: true,
