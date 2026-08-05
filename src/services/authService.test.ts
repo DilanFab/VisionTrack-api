@@ -134,6 +134,7 @@ describe("authService", () => {
         const tx = {
           tbl_persona: { create: jest.fn().mockResolvedValue({ persona_id: 1, persona_cedula: "1234567890", persona_primer_nombre: "Juan", persona_primer_apellido: "Perez", persona_correo: "juan@test.com" }) },
           tbl_usuario: { create: jest.fn().mockResolvedValue({ usuario_id: 1, usuario_nombre: "testuser", usuario_imagen: "default.png" }) },
+          tbl_rol: { findUnique: jest.fn().mockResolvedValue({ rol_id: 4, rol_nombre: "Paciente" }) },
           tbl_perfil: { create: jest.fn().mockResolvedValue({ perfil_id: 1, rol: { rol_nombre: "Paciente" } }) },
           tbl_historia_clinica: { create: jest.fn().mockResolvedValue({}) },
         };
