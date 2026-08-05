@@ -111,7 +111,41 @@ async function main() {
     }
     console.log(`  ✓ ${hojasData.length} menús hoja`);
 
-    // 6. Permisos: Administrador accede a todos los menús
+    // 6. Menús del portal del paciente
+    const portalRoot = await tx.tbl_menu.upsert({
+      where: { menu_nombre: "Portal del Paciente" },
+      update: { menu_icono: null, menu_referencia: null, menu_padre: null },
+      create: {
+        menu_nombre: "Portal del Paciente",
+        menu_icono: null,
+        menu_referencia: null,
+        menu_padre: null,
+      },
+    });
+
+    const portalHojasData = [
+      { menu_nombre: "Inicio", icono: "house", ref: "/dashboard" },
+      { menu_nombre: "Mis Citas", icono: "calendar-check", ref: "/citas" },
+      { menu_nombre: "Agendar Cita", icono: "calendar-plus", ref: "/agendar" },
+      { menu_nombre: "Mi Historial", icono: "clipboard-list", ref: "/historial" },
+      { menu_nombre: "Mi Perfil", icono: "user", ref: "/perfil" },
+    ];
+
+    for (const h of portalHojasData) {
+      await tx.tbl_menu.upsert({
+        where: { menu_nombre: h.menu_nombre },
+        update: { menu_padre: portalRoot.menu_id, menu_icono: h.icono, menu_referencia: h.ref },
+        create: {
+          menu_nombre: h.menu_nombre,
+          menu_padre: portalRoot.menu_id,
+          menu_icono: h.icono,
+          menu_referencia: h.ref,
+        },
+      });
+    }
+    console.log(`  ✓ ${portalHojasData.length + 1} menús del portal del paciente`);
+
+    // 7. Permisos: Administrador accede a todos los menús
     const adminRolId = roles["Administrador"];
     const allMenus = await tx.tbl_menu.findMany();
     let permisosCreados = 0;
@@ -124,8 +158,26 @@ async function main() {
       if (created) permisosCreados++;
     }
     console.log(`  ✓ ${permisosCreados} permisos (Administrador → todos los menús)`);
+
+    const pacienteRolId = roles["Paciente"];
+    const portalMenus = await tx.tbl_menu.findMany({
+      where: {
+        OR: [
+          { menu_id: portalRoot.menu_id },
+          { menu_padre: portalRoot.menu_id },
+        ],
+      },
+    });
+    for (const menu of portalMenus) {
+      await tx.tbl_permiso.upsert({
+        where: { rol_id_menu_id: { rol_id: pacienteRolId, menu_id: menu.menu_id } },
+        update: { permiso_estado: "A" },
+        create: { rol_id: pacienteRolId, menu_id: menu.menu_id, permiso_estado: "A" },
+      });
+    }
+    console.log(`  ✓ ${portalMenus.length} permisos (Paciente → portal)`);
     },
-    { timeout: 60000 }
+    { maxWait: 20000, timeout: 60000 }
   );
 
   console.log("\nSeed completado exitosamente.");

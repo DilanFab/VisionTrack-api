@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as authService from "../services/authService";
+import prisma from "../config/prisma";
 import { logger } from "../utils/logger";
 
 /**
@@ -194,5 +195,29 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
     logger.error({ err: error }, "Error en reset-password");
     res.status(500).json({ error: "Error al restablecer la contraseña" });
+  }
+};
+
+export const getNavigation = async (req: Request, res: Response) => {
+  try {
+    const roles = req.usuario?.roles ?? [];
+    const permisos = await prisma.tbl_permiso.findMany({
+      where: {
+        permiso_estado: "A",
+        rol: {
+          rol_estado: "A",
+          rol_nombre: { in: roles },
+        },
+        menu: { menu_estado: "A" },
+      },
+      include: { menu: true },
+      orderBy: { menu_id: "asc" },
+    });
+
+    const menusPorId = new Map(permisos.map((permiso) => [permiso.menu.menu_id, permiso.menu]));
+    res.json(Array.from(menusPorId.values()).sort((a, b) => a.menu_id - b.menu_id));
+  } catch (error) {
+    logger.error({ err: error }, "Error al obtener navegación del usuario");
+    res.status(500).json({ error: "Error al obtener la navegación" });
   }
 };

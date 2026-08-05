@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { login, register, refresh, forgotPassword, resetPassword } from "../controllers/authController";
+import { login, register, refresh, forgotPassword, resetPassword, getNavigation } from "../controllers/authController";
+import { verifyToken } from "../middlewares/auth";
 import { authLimiter } from "../middlewares/rateLimit";
 
 const router = Router();
@@ -18,5 +19,8 @@ router.post("/forgot-password", forgotPassword);
 
 // POST /api/auth/reset-password (público)
 router.post("/reset-password", resetPassword);
+
+// GET /api/auth/navigation
+router.get("/navigation", verifyToken, getNavigation);
 
 export default router;
