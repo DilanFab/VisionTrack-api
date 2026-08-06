@@ -29,6 +29,7 @@ import historiaClinicaRoutes from "./routes/citas/historiaClinicaRoutes";
 import pacienteCompletoRoutes from "./routes/citas/pacienteCompletoRoutes";
 import estadoCitaRoutes from "./routes/citas/estadoCitaRoutes";
 import citaRoutes from "./routes/citas/citaRoutes";
+import examenOptometricoRoutes from "./routes/citas/examenOptometricoRoutes";
 // App Móvil
 import pacienteMovilRoutes from "./routes/movil/pacienteRoutes";
 // Notificaciones
@@ -84,6 +85,7 @@ app.use("/api/historias-clinicas", historiaClinicaRoutes);
 app.use("/api/pacientes-completos", pacienteCompletoRoutes);
 app.use("/api/estados-cita", estadoCitaRoutes);
 app.use("/api/citas", citaRoutes);
+app.use("/api/examenes-optometricos", examenOptometricoRoutes);
 // App Móvil
 app.use("/api/movil", pacienteMovilRoutes);
 // Notificaciones

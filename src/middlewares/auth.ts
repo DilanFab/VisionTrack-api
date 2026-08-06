@@ -50,7 +50,15 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
+const normalizeRoleName = (role: string) =>
+  role
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
 export const authorize = (...rolesPermitidos: string[]) => {
+  const rolesPermitidosNormalizados = new Set(rolesPermitidos.map(normalizeRoleName));
+
   return (req: Request, res: Response, next: NextFunction) => {
     if (process.env.AUTH_BYPASS === "true") {
       return next();
@@ -61,7 +69,7 @@ export const authorize = (...rolesPermitidos: string[]) => {
       return;
     }
 
-    const tieneAcceso = req.usuario.roles.some((rol) => rolesPermitidos.includes(rol));
+    const tieneAcceso = req.usuario.roles.some((rol) => rolesPermitidosNormalizados.has(normalizeRoleName(rol)));
     if (!tieneAcceso) {
       res.status(403).json({
         error: `Acceso denegado. Se requiere uno de los siguientes roles: ${rolesPermitidos.join(", ")}`,
