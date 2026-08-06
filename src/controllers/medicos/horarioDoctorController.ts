@@ -1,144 +1,186 @@
 import { Request, Response } from "express";
-import prisma from "../../config/prisma";
+import * as horarioDoctorService from "../../services/horarioDoctorService";
 
-// GET /api/horarios-doctor
+/**
+ * @openapi
+ * /api/horarios-doctor:
+ *   get:
+ *     tags: [HorariosDoctor]
+ *     summary: Listar horarios de doctor (paginado)
+ *     parameters:
+ *       - { name: page, in: query, schema: { type: integer }, example: 1 }
+ *       - { name: limit, in: query, schema: { type: integer }, example: 20 }
+ *       - { name: doctor_id, in: query, schema: { type: integer }, example: 1 }
+ *     responses:
+ *       200:
+ *         description: Horarios paginados
+ */
 export const getHorariosDoctor = async (req: Request, res: Response) => {
   try {
-    const horarios = await prisma.tbl_horario_doctor.findMany();
-    res.json(horarios);
+    const result = await horarioDoctorService.listar(req.query as any);
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener horarios de doctores" });
   }
 };
 
-// GET /api/horarios-doctor/doctor/:doctorId
+/**
+ * @openapi
+ * /api/horarios-doctor/doctor/{doctorId}:
+ *   get:
+ *     tags: [HorariosDoctor]
+ *     summary: Listar horarios de un doctor específico
+ *     parameters:
+ *       - { name: doctorId, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Horarios del doctor
+ */
 export const getHorariosPorDoctor = async (req: Request, res: Response) => {
   try {
-    const { doctorId } = req.params;
-    const horarios = await prisma.tbl_horario_doctor.findMany({
-      where: { doctor_id: Number(doctorId), horario_doctor_estado: "A" },
-    });
+    const horarios = await horarioDoctorService.listarPorDoctor(Number(req.params.doctorId));
     res.json(horarios);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener los horarios del doctor" });
   }
 };
 
-// PUT /api/horarios-doctor/doctor/:doctorId
-// Reemplaza por completo el horario del doctor: borra físicamente los horarios
-// previos y guarda los nuevos, evitando registros duplicados o residuales.
+/**
+ * @openapi
+ * /api/horarios-doctor/doctor/{doctorId}:
+ *   put:
+ *     tags: [HorariosDoctor]
+ *     summary: Reemplazar horarios de un doctor
+ *     parameters:
+ *       - { name: doctorId, in: path, required: true, schema: { type: integer } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [horarios]
+ *             properties:
+ *               horarios:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     horario_doctor_dia: { type: string, example: "Lunes" }
+ *                     horario_doctor_inicio: { type: string, example: "08:00" }
+ *                     horario_doctor_fin: { type: string, example: "12:00" }
+ *     responses:
+ *       200:
+ *         description: Horarios reemplazados
+ */
 export const setHorariosPorDoctor = async (req: Request, res: Response) => {
   try {
-    const { doctorId } = req.params;
-    const { horarios } = req.body;
-
-    await prisma.$transaction(async (tx) => {
-      await tx.tbl_horario_doctor.deleteMany({ where: { doctor_id: Number(doctorId) } });
-      if (Array.isArray(horarios) && horarios.length > 0) {
-        await tx.tbl_horario_doctor.createMany({
-          data: horarios.map((h: any) => ({
-            doctor_id: Number(doctorId),
-            horario_doctor_dia: h.horario_doctor_dia,
-            horario_doctor_inicio: new Date(`1970-01-01T${h.horario_doctor_inicio}`),
-            horario_doctor_fin: new Date(`1970-01-01T${h.horario_doctor_fin}`),
-            horario_doctor_estado: "A",
-          })),
-        });
-      }
-    });
-
-    const horariosActualizados = await prisma.tbl_horario_doctor.findMany({
-      where: { doctor_id: Number(doctorId), horario_doctor_estado: "A" },
-    });
-    res.json(horariosActualizados);
+    const horarios = await horarioDoctorService.reemplazarHorariosPorDoctor(Number(req.params.doctorId), req.body.horarios);
+    res.json(horarios);
   } catch (error) {
     res.status(500).json({ error: "Error al guardar el horario del doctor" });
   }
 };
 
-// GET /api/horarios-doctor/:id
+/**
+ * @openapi
+ * /api/horarios-doctor/{id}:
+ *   get:
+ *     tags: [HorariosDoctor]
+ *     summary: Obtener horario por ID
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Horario encontrado
+ *       404:
+ *         description: Horario no encontrado
+ */
 export const getHorarioDoctorById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const horario = await prisma.tbl_horario_doctor.findUnique({
-      where: { horario_doctor_id: Number(id) },
-    });
-    if (!horario) {
-      res.status(404).json({ error: "Horario no encontrado" });
-      return;
-    }
+    const horario = await horarioDoctorService.obtenerPorId(Number(req.params.id));
+    if (!horario) { res.status(404).json({ error: "Horario no encontrado" }); return; }
     res.json(horario);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el horario" });
   }
 };
 
-// POST /api/horarios-doctor
+/**
+ * @openapi
+ * /api/horarios-doctor:
+ *   post:
+ *     tags: [HorariosDoctor]
+ *     summary: Crear horario de doctor
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [doctor_id, horario_doctor_dia, horario_doctor_inicio, horario_doctor_fin]
+ *             properties:
+ *               doctor_id: { type: integer, example: 1 }
+ *               horario_doctor_dia: { type: string, example: "Lunes" }
+ *               horario_doctor_inicio: { type: string, example: "08:00" }
+ *               horario_doctor_fin: { type: string, example: "12:00" }
+ *     responses:
+ *       201:
+ *         description: Horario creado
+ */
 export const createHorarioDoctor = async (req: Request, res: Response) => {
   try {
-    const {
-      doctor_id,
-      horario_doctor_dia,
-      horario_doctor_inicio,
-      horario_doctor_fin,
-      horario_doctor_estado,
-    } = req.body;
-
-    const horario = await prisma.tbl_horario_doctor.create({
-      data: {
-        doctor_id,
-        horario_doctor_dia,
-        horario_doctor_inicio: new Date(`1970-01-01T${horario_doctor_inicio}`),
-        horario_doctor_fin: new Date(`1970-01-01T${horario_doctor_fin}`),
-        horario_doctor_estado,
-      },
-    });
+    const horario = await horarioDoctorService.crear(req.body);
     res.status(201).json(horario);
   } catch (error) {
     res.status(500).json({ error: "Error al crear el horario" });
   }
 };
 
-// PUT /api/horarios-doctor/:id
+/**
+ * @openapi
+ * /api/horarios-doctor/{id}:
+ *   put:
+ *     tags: [HorariosDoctor]
+ *     summary: Actualizar horario de doctor
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               horario_doctor_inicio: { type: string, example: "08:00" }
+ *     responses:
+ *       200:
+ *         description: Horario actualizado
+ */
 export const updateHorarioDoctor = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const {
-      doctor_id,
-      horario_doctor_dia,
-      horario_doctor_inicio,
-      horario_doctor_fin,
-      horario_doctor_estado,
-    } = req.body;
-
-    const horario = await prisma.tbl_horario_doctor.update({
-      where: { horario_doctor_id: Number(id) },
-      data: {
-        doctor_id,
-        horario_doctor_dia,
-        horario_doctor_inicio: horario_doctor_inicio
-          ? new Date(`1970-01-01T${horario_doctor_inicio}`)
-          : undefined,
-        horario_doctor_fin: horario_doctor_fin
-          ? new Date(`1970-01-01T${horario_doctor_fin}`)
-          : undefined,
-        horario_doctor_estado,
-      },
-    });
+    const horario = await horarioDoctorService.actualizar(Number(req.params.id), req.body);
     res.json(horario);
   } catch (error) {
     res.status(500).json({ error: "Error al actualizar el horario" });
   }
 };
 
-// DELETE /api/horarios-doctor/:id (borrado lógico)
+/**
+ * @openapi
+ * /api/horarios-doctor/{id}:
+ *   delete:
+ *     tags: [HorariosDoctor]
+ *     summary: Desactivar horario de doctor
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Horario desactivado
+ */
 export const deleteHorarioDoctor = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const horario = await prisma.tbl_horario_doctor.update({
-      where: { horario_doctor_id: Number(id) },
-      data: { horario_doctor_estado: "I" },
-    });
+    const horario = await horarioDoctorService.eliminar(Number(req.params.id));
     res.json({ message: "Horario desactivado correctamente", horario });
   } catch (error) {
     res.status(500).json({ error: "Error al desactivar el horario" });

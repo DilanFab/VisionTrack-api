@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getRoles,
   getRolById,
@@ -9,10 +10,10 @@ import {
 
 const router = Router();
 
-router.get("/", getRoles);
-router.get("/:id", getRolById);
-router.post("/", createRol);
-router.put("/:id", updateRol);
-router.delete("/:id", deleteRol);
+router.get("/", verifyToken, authorize("Administrador"), getRoles);
+router.get("/:id", verifyToken, authorize("Administrador"), getRolById);
+router.post("/", verifyToken, authorize("Administrador"), createRol);
+router.put("/:id", verifyToken, authorize("Administrador"), updateRol);
+router.delete("/:id", verifyToken, authorize("Administrador"), deleteRol);
 
 export default router;

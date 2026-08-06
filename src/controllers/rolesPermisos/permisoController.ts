@@ -1,96 +1,152 @@
 import { Request, Response } from "express";
-import prisma from "../../config/prisma";
+import * as permisoService from "../../services/permisoService";
 
-// GET /api/permisos
-export const getPermisos = async (req: Request, res: Response) => {
+/**
+ * @openapi
+ * /api/permisos:
+ *   get:
+ *     tags: [Permisos]
+ *     summary: Listar permisos
+ *     responses:
+ *       200:
+ *         description: Lista de permisos
+ */
+export const getPermisos = async (_req: Request, res: Response) => {
   try {
-    const permisos = await prisma.tbl_permiso.findMany();
+    const permisos = await permisoService.listar();
     res.json(permisos);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener permisos" });
   }
 };
 
-// GET /api/permisos/:id
+/**
+ * @openapi
+ * /api/permisos/{id}:
+ *   get:
+ *     tags: [Permisos]
+ *     summary: Obtener permiso por ID
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Permiso encontrado
+ *       404:
+ *         description: Permiso no encontrado
+ */
 export const getPermisoById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const permiso = await prisma.tbl_permiso.findUnique({
-      where: { permiso_id: Number(id) },
-    });
-    if (!permiso) {
-      res.status(404).json({ error: "Permiso no encontrado" });
-      return;
-    }
+    const permiso = await permisoService.obtenerPorId(Number(req.params.id));
+    if (!permiso) { res.status(404).json({ error: "Permiso no encontrado" }); return; }
     res.json(permiso);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el permiso" });
   }
 };
 
-// POST /api/permisos
+/**
+ * @openapi
+ * /api/permisos:
+ *   post:
+ *     tags: [Permisos]
+ *     summary: Crear permiso
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [rol_id, menu_id]
+ *             properties:
+ *               rol_id: { type: integer, example: 1 }
+ *               menu_id: { type: integer, example: 1 }
+ *     responses:
+ *       201:
+ *         description: Permiso creado
+ */
 export const createPermiso = async (req: Request, res: Response) => {
   try {
-    const { rol_id, menu_id, permiso_estado } = req.body;
-    const permiso = await prisma.tbl_permiso.create({
-      data: { rol_id, menu_id, permiso_estado },
-    });
+    const permiso = await permisoService.crear(req.body);
     res.status(201).json(permiso);
   } catch (error) {
     res.status(500).json({ error: "Error al crear el permiso" });
   }
 };
 
-// PUT /api/permisos/:id
+/**
+ * @openapi
+ * /api/permisos/{id}:
+ *   put:
+ *     tags: [Permisos]
+ *     summary: Actualizar permiso
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               menu_id: { type: integer, example: 1 }
+ *     responses:
+ *       200:
+ *         description: Permiso actualizado
+ */
 export const updatePermiso = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { rol_id, menu_id, permiso_estado } = req.body;
-    const permiso = await prisma.tbl_permiso.update({
-      where: { permiso_id: Number(id) },
-      data: { rol_id, menu_id, permiso_estado },
-    });
+    const permiso = await permisoService.actualizar(Number(req.params.id), req.body);
     res.json(permiso);
   } catch (error) {
     res.status(500).json({ error: "Error al actualizar el permiso" });
   }
 };
 
-// DELETE /api/permisos/:id (borrado lógico)
+/**
+ * @openapi
+ * /api/permisos/{id}:
+ *   delete:
+ *     tags: [Permisos]
+ *     summary: Desactivar permiso
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Permiso desactivado
+ */
 export const deletePermiso = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const permiso = await prisma.tbl_permiso.update({
-      where: { permiso_id: Number(id) },
-      data: { permiso_estado: "I" },
-    });
+    const permiso = await permisoService.eliminar(Number(req.params.id));
     res.json({ message: "Permiso desactivado correctamente", permiso });
   } catch (error) {
     res.status(500).json({ error: "Error al desactivar el permiso" });
   }
 };
 
-// PUT /api/permisos/rol/:id
-// Reemplaza por completo los permisos de un rol: borra físicamente los
-// existentes y crea uno nuevo por cada menu_id recibido, evitando duplicados.
+/**
+ * @openapi
+ * /api/permisos/rol/{id}:
+ *   put:
+ *     tags: [Permisos]
+ *     summary: Reemplazar permisos de un rol (asignación masiva de menús)
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer }, description: ID del rol }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [menu_ids]
+ *             properties:
+ *               menu_ids: { type: array, items: { type: integer }, example: [1, 2, 3] }
+ *     responses:
+ *       200:
+ *         description: Permisos del rol reemplazados
+ */
 export const setPermisosDeRol = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { menu_ids } = req.body;
-    const rol_id = Number(id);
-
-    const permisos = await prisma.$transaction(async (tx) => {
-      await tx.tbl_permiso.deleteMany({ where: { rol_id } });
-
-      if (Array.isArray(menu_ids) && menu_ids.length > 0) {
-        await tx.tbl_permiso.createMany({
-          data: menu_ids.map((menu_id: number) => ({ rol_id, menu_id })),
-        });
-      }
-
-      return tx.tbl_permiso.findMany({ where: { rol_id } });
-    });
-
+    const permisos = await permisoService.reemplazarPermisosDeRol(Number(req.params.id), req.body.menu_ids);
     res.json(permisos);
   } catch (error) {
     res.status(500).json({ error: "Error al actualizar los permisos del rol" });

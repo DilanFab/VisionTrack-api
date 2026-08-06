@@ -1,150 +1,128 @@
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import prisma from "../../config/prisma";
+import * as usuarioService from "../../services/usuarioService";
 
-// GET /api/usuarios
+/**
+ * @openapi
+ * /api/usuarios:
+ *   get:
+ *     tags: [Usuarios]
+ *     summary: Listar usuarios (paginado)
+ *     parameters:
+ *       - { name: page, in: query, schema: { type: integer }, example: 1 }
+ *       - { name: limit, in: query, schema: { type: integer }, example: 20 }
+ *       - { name: usuario_estado, in: query, schema: { type: string }, example: "A" }
+ *     responses:
+ *       200:
+ *         description: Usuarios paginados
+ */
 export const getUsuarios = async (req: Request, res: Response) => {
   try {
-    const usuarios = await prisma.tbl_usuario.findMany({
-      select: {
-        usuario_id: true,
-        persona_id: true,
-        usuario_imagen: true,
-        usuario_nombre: true,
-        usuario_intentos: true,
-        usuario_cambiar_contrasena: true,
-        usuario_estado: true,
-      },
-    });
-    res.json(usuarios);
+    const result = await usuarioService.listar(req.query as any);
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener usuarios" });
   }
 };
 
-// GET /api/usuarios/:id
+/**
+ * @openapi
+ * /api/usuarios/{id}:
+ *   get:
+ *     tags: [Usuarios]
+ *     summary: Obtener usuario por ID
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Usuario encontrado
+ *       404:
+ *         description: Usuario no encontrado
+ */
 export const getUsuarioById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const usuario = await prisma.tbl_usuario.findUnique({
-      where: { usuario_id: Number(id) },
-      select: {
-        usuario_id: true,
-        persona_id: true,
-        usuario_imagen: true,
-        usuario_nombre: true,
-        usuario_intentos: true,
-        usuario_cambiar_contrasena: true,
-        usuario_estado: true,
-      },
-    });
-    if (!usuario) {
-      res.status(404).json({ error: "Usuario no encontrado" });
-      return;
-    }
+    const usuario = await usuarioService.obtenerPorId(Number(req.params.id));
+    if (!usuario) { res.status(404).json({ error: "Usuario no encontrado" }); return; }
     res.json(usuario);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el usuario" });
   }
 };
 
-// POST /api/usuarios
+/**
+ * @openapi
+ * /api/usuarios:
+ *   post:
+ *     tags: [Usuarios]
+ *     summary: Crear usuario
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [persona_id, usuario_nombre, usuario_contrasena]
+ *             properties:
+ *               persona_id: { type: integer, example: 1 }
+ *               usuario_nombre: { type: string, example: "juanp" }
+ *               usuario_contrasena: { type: string, example: "password123" }
+ *     responses:
+ *       201:
+ *         description: Usuario creado
+ */
 export const createUsuario = async (req: Request, res: Response) => {
   try {
-    const {
-      persona_id,
-      usuario_imagen,
-      usuario_nombre,
-      usuario_contrasena,
-      usuario_estado,
-    } = req.body;
-
-    const hashedPassword = await bcrypt.hash(usuario_contrasena, 10);
-
-    const usuario = await prisma.tbl_usuario.create({
-      data: {
-        persona_id,
-        usuario_imagen,
-        usuario_nombre,
-        usuario_contrasena: hashedPassword,
-        usuario_estado,
-      },
-      select: {
-        usuario_id: true,
-        persona_id: true,
-        usuario_imagen: true,
-        usuario_nombre: true,
-        usuario_intentos: true,
-        usuario_cambiar_contrasena: true,
-        usuario_estado: true,
-      },
-    });
+    const usuario = await usuarioService.crear(req.body);
     res.status(201).json(usuario);
   } catch (error) {
     res.status(500).json({ error: "Error al crear el usuario" });
   }
 };
 
-// PUT /api/usuarios/:id
+/**
+ * @openapi
+ * /api/usuarios/{id}:
+ *   put:
+ *     tags: [Usuarios]
+ *     summary: Actualizar usuario
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               usuario_nombre: { type: string, example: "juanp" }
+ *               usuario_contrasena: { type: string, example: "nuevaPassword123" }
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado
+ */
 export const updateUsuario = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const {
-      persona_id,
-      usuario_imagen,
-      usuario_nombre,
-      usuario_contrasena,
-      usuario_intentos,
-      usuario_cambiar_contrasena,
-      usuario_estado,
-    } = req.body;
-
-    const data: any = {
-      persona_id,
-      usuario_imagen,
-      usuario_nombre,
-      usuario_intentos,
-      usuario_cambiar_contrasena,
-      usuario_estado,
-    };
-
-    // Solo re-encripta si se envía una nueva contraseña
-    if (usuario_contrasena) {
-      data.usuario_contrasena = await bcrypt.hash(usuario_contrasena, 10);
-    }
-
-    const usuario = await prisma.tbl_usuario.update({
-      where: { usuario_id: Number(id) },
-      data,
-      select: {
-        usuario_id: true,
-        persona_id: true,
-        usuario_imagen: true,
-        usuario_nombre: true,
-        usuario_intentos: true,
-        usuario_cambiar_contrasena: true,
-        usuario_estado: true,
-      },
-    });
+    const usuario = await usuarioService.actualizar(Number(req.params.id), req.body);
     res.json(usuario);
   } catch (error) {
     res.status(500).json({ error: "Error al actualizar el usuario" });
   }
 };
 
-// DELETE /api/usuarios/:id (borrado lógico)
+/**
+ * @openapi
+ * /api/usuarios/{id}:
+ *   delete:
+ *     tags: [Usuarios]
+ *     summary: Desactivar usuario (borrado lógico)
+ *     parameters:
+ *       - { name: id, in: path, required: true, schema: { type: integer } }
+ *     responses:
+ *       200:
+ *         description: Usuario desactivado
+ */
 export const deleteUsuario = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const usuario = await prisma.tbl_usuario.update({
-      where: { usuario_id: Number(id) },
-      data: { usuario_estado: "I" },
-      select: {
-        usuario_id: true,
-        usuario_nombre: true,
-        usuario_estado: true,
-      },
-    });
+    const usuario = await usuarioService.eliminar(Number(req.params.id));
     res.json({ message: "Usuario desactivado correctamente", usuario });
   } catch (error) {
     res.status(500).json({ error: "Error al desactivar el usuario" });

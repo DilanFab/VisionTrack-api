@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getPermisos,
   getPermisoById,
@@ -10,11 +11,11 @@ import {
 
 const router = Router();
 
-router.get("/", getPermisos);
-router.put("/rol/:id", setPermisosDeRol);
-router.get("/:id", getPermisoById);
-router.post("/", createPermiso);
-router.put("/:id", updatePermiso);
-router.delete("/:id", deletePermiso);
+router.get("/", verifyToken, authorize("Administrador"), getPermisos);
+router.put("/rol/:id", verifyToken, authorize("Administrador"), setPermisosDeRol);
+router.get("/:id", verifyToken, authorize("Administrador"), getPermisoById);
+router.post("/", verifyToken, authorize("Administrador"), createPermiso);
+router.put("/:id", verifyToken, authorize("Administrador"), updatePermiso);
+router.delete("/:id", verifyToken, authorize("Administrador"), deletePermiso);
 
 export default router;

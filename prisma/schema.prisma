@@ -52,6 +52,8 @@ model tbl_usuario {
 
   persona                     tbl_persona @relation(fields: [persona_id], references: [persona_id], onDelete: Cascade, onUpdate: Cascade)
   perfiles                    tbl_perfil[]
+  push_tokens                 tbl_push_token[]
+  reset_tokens                tbl_reset_token[]
 }
 
 // Gestion de Roles y Permisos
@@ -86,6 +88,8 @@ model tbl_permiso {
 
   rol            tbl_rol    @relation(fields: [rol_id], references: [rol_id], onDelete: Cascade, onUpdate: Cascade)
   menu           tbl_menu   @relation(fields: [menu_id], references: [menu_id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([rol_id, menu_id])
 }
 
 model tbl_perfil {
@@ -163,14 +167,37 @@ model tbl_estado_cita {
 }
 
 model tbl_cita {
-  cita_id             Int                   @id @default(autoincrement())
-  horario_doctor_id   Int
-  historia_clinica_id Int
-  cita_fecha          DateTime              @db.Date
-  cita_motivo         String                @db.VarChar(500)
-  estado_cita_id      Int
+  cita_id                       Int                   @id @default(autoincrement())
+  horario_doctor_id             Int
+  historia_clinica_id           Int
+  cita_fecha                    DateTime              @db.Date
+  cita_motivo                   String                @db.VarChar(500)
+  estado_cita_id                Int
+  cita_notificacion_enviada     Boolean               @default(false)
 
   horario_doctor      tbl_horario_doctor    @relation(fields: [horario_doctor_id], references: [horario_doctor_id], onDelete: Cascade, onUpdate: Cascade)
   historia_clinica    tbl_historia_clinica  @relation(fields: [historia_clinica_id], references: [historia_clinica_id], onDelete: Cascade, onUpdate: Cascade)
   estado_cita         tbl_estado_cita       @relation(fields: [estado_cita_id], references: [estado_cita_id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model tbl_push_token {
+  push_token_id    Int       @id @default(autoincrement())
+  usuario_id       Int
+  token            String    @unique @db.VarChar(255)
+  creado_en        DateTime  @default(now())
+  actualizado_en   DateTime  @updatedAt
+
+  usuario          tbl_usuario @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model tbl_reset_token {
+  reset_token_id         Int       @id @default(autoincrement())
+  usuario_id             Int
+  reset_token_hash       String    @db.VarChar(255)
+  reset_token_expires_at DateTime
+  reset_token_usado      Boolean   @default(false)
+  reset_token_created_at DateTime  @default(now())
+  reset_token_used_at    DateTime?
+
+  usuario                tbl_usuario @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade, onUpdate: Cascade)
 }
