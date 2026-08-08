@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getPersonas,
   getPersonaById,
@@ -9,10 +10,10 @@ import {
 
 const router = Router();
 
-router.get("/", getPersonas);
-router.get("/:id", getPersonaById);
-router.post("/", createPersona);
-router.put("/:id", updatePersona);
-router.delete("/:id", deletePersona);
+router.get("/", verifyToken, authorize("Administrador"), getPersonas);
+router.get("/:id", verifyToken, authorize("Administrador"), getPersonaById);
+router.post("/", verifyToken, authorize("Administrador"), createPersona);
+router.put("/:id", verifyToken, authorize("Administrador"), updatePersona);
+router.delete("/:id", verifyToken, authorize("Administrador"), deletePersona);
 
 export default router;

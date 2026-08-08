@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getCitas,
   getCitaById,
@@ -9,10 +10,10 @@ import {
 
 const router = Router();
 
-router.get("/", getCitas);
-router.get("/:id", getCitaById);
-router.post("/", createCita);
-router.put("/:id", updateCita);
-router.delete("/:id", deleteCita);
+router.get("/", verifyToken, authorize("Administrador", "Medico"), getCitas);
+router.get("/:id", verifyToken, authorize("Administrador", "Medico"), getCitaById);
+router.post("/", verifyToken, authorize("Administrador", "Medico"), createCita);
+router.put("/:id", verifyToken, authorize("Administrador", "Medico"), updateCita);
+router.delete("/:id", verifyToken, authorize("Administrador", "Medico"), deleteCita);
 
 export default router;

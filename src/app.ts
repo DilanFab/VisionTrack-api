@@ -1,7 +1,11 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import dotenv from "dotenv";
 import path from "path";
+import { errorHandler } from "./middlewares/errorHandler";
+import { generalLimiter } from "./middlewares/rateLimit";
+import { iniciarRecordatorioCitas } from "./jobs/recordatorioCitas";
 
 // Gestión de Usuarios
 import generoRoutes from "./routes/usuarios/generoRoutes";
@@ -31,13 +35,29 @@ import productoRoutes from "./routes/inventario/productoRoutes";
 import movimientoInventarioRoutes from "./routes/inventario/movimientoInventarioRoutes";
 // Facturación Interna
 import facturaRoutes from "./routes/ventas/facturaRoutes";
+import examenOptometricoRoutes from "./routes/citas/examenOptometricoRoutes";
+// App Móvil
+import pacienteMovilRoutes from "./routes/movil/pacienteRoutes";
+// Notificaciones
+import notificacionesRoutes from "./routes/notificacionesRoutes";
+// Documentación (Swagger UI)
+import docsRoutes from "./docs/routes";
 
 dotenv.config();
 
 const app = express();
 
-// Middlewares
-app.use(cors());
+// Middlewares de seguridad
+app.use(helmet());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGINS?.split(",") || ["http://localhost:5173"],
+    credentials: true,
+  })
+);
+app.use(generalLimiter);
+
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
@@ -77,11 +97,24 @@ app.use("/api/productos", productoRoutes);
 app.use("/api/movimientos-inventario", movimientoInventarioRoutes);
 // Facturación Interna
 app.use("/api/facturas", facturaRoutes);
+app.use("/api/examenes-optometricos", examenOptometricoRoutes);
+// App Móvil
+app.use("/api/movil", pacienteMovilRoutes);
+// Notificaciones
+app.use("/api/notificaciones", notificacionesRoutes);
+// Documentación (Swagger UI en /api/docs)
+app.use("/api/docs", docsRoutes);
 
-// Puerto
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+// Manejador global de errores (debe ir último)
+app.use(errorHandler);
+
+// Puerto (no arrancar en tests para no conflictos de puerto)
+if (process.env.NODE_ENV !== "test") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    iniciarRecordatorioCitas();
+  });
+}
 
 export default app;
