@@ -1,113 +1,102 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
-// Database schema
-
-// Gestión de Usuarios
 model tbl_genero {
-  genero_id     Int    @id @default(autoincrement())
-  genero_nombre String @unique @db.VarChar(20)
-  genero_estado String @default("A") @db.Char(1)
-
+  genero_id     Int           @id @default(autoincrement())
+  genero_nombre String        @unique @db.VarChar(20)
+  genero_estado String        @default("A") @db.Char(1)
   personas      tbl_persona[]
 }
 
 model tbl_persona {
-  persona_id                Int        @id @default(autoincrement())
-  genero_id                 Int
-  persona_cedula            String     @unique @db.VarChar(10)
-  persona_primer_nombre     String     @db.VarChar(50)
-  persona_segundo_nombre    String?    @db.VarChar(50)
-  persona_primer_apellido   String     @db.VarChar(50)
-  persona_segundo_apellido  String?    @db.VarChar(50)
-  persona_fecha_nacimiento  DateTime   @db.Date
-  persona_direccion         String     @db.VarChar(500)
-  persona_telefono          String     @db.VarChar(10)
-  persona_correo            String     @db.VarChar(500)
-  persona_estado            String     @default("A") @db.Char(1)
-
-  genero                    tbl_genero @relation(fields: [genero_id], references: [genero_id], onDelete: Cascade, onUpdate: Cascade)
-  usuario                   tbl_usuario?
+  persona_id               Int             @id @default(autoincrement())
+  genero_id                Int
+  persona_cedula           String          @unique @db.VarChar(10)
+  persona_primer_nombre    String          @db.VarChar(50)
+  persona_segundo_nombre   String?         @db.VarChar(50)
+  persona_primer_apellido  String          @db.VarChar(50)
+  persona_segundo_apellido String?         @db.VarChar(50)
+  persona_fecha_nacimiento DateTime        @db.Date
+  persona_direccion        String          @db.VarChar(500)
+  persona_telefono         String          @db.VarChar(10)
+  persona_correo           String          @db.VarChar(500)
+  persona_estado           String          @default("A") @db.Char(1)
+  genero                   tbl_genero      @relation(fields: [genero_id], references: [genero_id], onDelete: Cascade)
+  usuario                  tbl_usuario?
+  facturas                 tbl_factura[]
 }
 
 model tbl_usuario {
-  usuario_id                  Int         @id @default(autoincrement())
-  persona_id                  Int         @unique
-  usuario_imagen              String      @db.VarChar(255)
-  usuario_nombre              String      @unique @db.VarChar(100)
-  usuario_contrasena          String      @db.VarChar(255)
-  usuario_intentos            Int         @default(0)
-  usuario_cambiar_contrasena  Int         @default(1) @db.SmallInt
-  usuario_estado              String      @default("A") @db.Char(1)
-
-  persona                     tbl_persona @relation(fields: [persona_id], references: [persona_id], onDelete: Cascade, onUpdate: Cascade)
-  perfiles                    tbl_perfil[]
+  usuario_id                 Int                      @id @default(autoincrement())
+  persona_id                 Int                      @unique
+  usuario_imagen             String                   @db.VarChar(255)
+  usuario_nombre             String                   @unique @db.VarChar(100)
+  usuario_contrasena         String                   @db.VarChar(255)
+  usuario_intentos           Int                      @default(0)
+  usuario_cambiar_contrasena Int                      @default(1) @db.SmallInt
+  usuario_estado             String                   @default("A") @db.Char(1)
+  tbl_examen_optometrico     tbl_examen_optometrico[]
+  perfiles                   tbl_perfil[]
+  tbl_push_token             tbl_push_token[]
+  tbl_reset_token            tbl_reset_token[]
+  persona                    tbl_persona              @relation(fields: [persona_id], references: [persona_id], onDelete: Cascade)
+  movimientos_inventario     tbl_movimiento_inventario[]
 }
 
-// Gestion de Roles y Permisos
 model tbl_menu {
-  menu_id         Int         @id @default(autoincrement())
-  menu_padre      Int?        @default(dbgenerated("NULL"))
-  menu_nombre     String      @unique @db.VarChar(50)
-  menu_icono      String?     @db.VarChar(500)
-  menu_referencia String?     @db.VarChar(500)
-  menu_estado     String      @default("A") @db.Char(1)
-
-  padre           tbl_menu?   @relation("MenuPadre", fields: [menu_padre], references: [menu_id])
-  hijos           tbl_menu[]  @relation("MenuPadre")
+  menu_id         Int           @id @default(autoincrement())
+  menu_padre      Int?
+  menu_nombre     String        @unique @db.VarChar(50)
+  menu_icono      String?       @db.VarChar(500)
+  menu_referencia String?       @db.VarChar(500)
+  menu_estado     String        @default("A") @db.Char(1)
+  padre           tbl_menu?     @relation("MenuPadre", fields: [menu_padre], references: [menu_id])
+  hijos           tbl_menu[]    @relation("MenuPadre")
   permisos        tbl_permiso[]
 }
 
 model tbl_rol {
-  rol_id          Int            @id @default(autoincrement())
-  rol_nombre      String         @unique @db.VarChar(100)
-  rol_descripcion String         @db.VarChar(500)
-  rol_estado      String         @default("A") @db.Char(1)
-
-  permisos        tbl_permiso[]
+  rol_id          Int           @id @default(autoincrement())
+  rol_nombre      String        @unique @db.VarChar(100)
+  rol_descripcion String        @db.VarChar(500)
+  rol_estado      String        @default("A") @db.Char(1)
   perfiles        tbl_perfil[]
+  permisos        tbl_permiso[]
 }
 
 model tbl_permiso {
-  permiso_id     Int        @id @default(autoincrement())
+  permiso_id     Int      @id @default(autoincrement())
   rol_id         Int
   menu_id        Int
-  permiso_estado String     @default("A") @db.Char(1)
+  permiso_estado String   @default("A") @db.Char(1)
+  menu           tbl_menu @relation(fields: [menu_id], references: [menu_id], onDelete: Cascade)
+  rol            tbl_rol  @relation(fields: [rol_id], references: [rol_id], onDelete: Cascade)
 
-  rol            tbl_rol    @relation(fields: [rol_id], references: [rol_id], onDelete: Cascade, onUpdate: Cascade)
-  menu           tbl_menu   @relation(fields: [menu_id], references: [menu_id], onDelete: Cascade, onUpdate: Cascade)
+  @@unique([rol_id, menu_id])
 }
 
 model tbl_perfil {
-  perfil_id     Int          @id @default(autoincrement())
-  usuario_id    Int
-  rol_id        Int
-  perfil_estado String       @default("A") @db.Char(1)
-
-  usuario                 tbl_usuario  @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade, onUpdate: Cascade)
-  rol                     tbl_rol      @relation(fields: [rol_id], references: [rol_id], onDelete: Cascade, onUpdate: Cascade)
-  doctor                  tbl_doctor?
-  historias_clinicas      tbl_historia_clinica[]
+  perfil_id          Int                    @id @default(autoincrement())
+  usuario_id         Int
+  rol_id             Int
+  perfil_estado      String                 @default("A") @db.Char(1)
+  doctor             tbl_doctor?
+  historias_clinicas tbl_historia_clinica[]
+  rol                tbl_rol                @relation(fields: [rol_id], references: [rol_id], onDelete: Cascade)
+  usuario            tbl_usuario            @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade)
 }
 
-// Gestión de Médicos
 model tbl_especialidad_medica {
-  especialidad_medica_id          Int    @id @default(autoincrement())
-  especialidad_medica_nombre      String @db.VarChar(100)
-  especialidad_medica_descripcion String @db.VarChar(500)
-  especialidad_medica_estado      String @default("A") @db.Char(1)
-
-  doctores    tbl_doctor[]
+  especialidad_medica_id          Int          @id @default(autoincrement())
+  especialidad_medica_nombre      String       @db.VarChar(100)
+  especialidad_medica_descripcion String       @db.VarChar(500)
+  especialidad_medica_estado      String       @default("A") @db.Char(1)
+  doctores                        tbl_doctor[]
 }
 
 model tbl_doctor {
@@ -115,10 +104,199 @@ model tbl_doctor {
   especialidad_medica_id Int
   perfil_id              Int                     @unique
   doctor_estado          String                  @default("A") @db.Char(1)
-
-  especialidad_medica    tbl_especialidad_medica @relation(fields: [especialidad_medica_id], references: [especialidad_medica_id], onDelete: Cascade, onUpdate: Cascade)
-  perfil                 tbl_perfil              @relation(fields: [perfil_id], references: [perfil_id], onDelete: Cascade, onUpdate: Cascade)
+  especialidad_medica    tbl_especialidad_medica @relation(fields: [especialidad_medica_id], references: [especialidad_medica_id], onDelete: Cascade)
+  perfil                 tbl_perfil              @relation(fields: [perfil_id], references: [perfil_id], onDelete: Cascade)
   horarios               tbl_horario_doctor[]
+}
+
+model tbl_horario_doctor {
+  horario_doctor_id     Int        @id @default(autoincrement())
+  doctor_id             Int
+  horario_doctor_dia    enum_dias
+  horario_doctor_inicio DateTime   @db.Time(6)
+  horario_doctor_fin    DateTime   @db.Time(6)
+  horario_doctor_estado String     @default("A") @db.Char(1)
+  citas                 tbl_cita[]
+  doctor                tbl_doctor @relation(fields: [doctor_id], references: [doctor_id], onDelete: Cascade)
+}
+
+model tbl_historia_clinica {
+  historia_clinica_id             Int                      @id @default(autoincrement())
+  paciente_id                     Int
+  historia_clinica_numero         String                   @unique @db.VarChar(20)
+  historia_clinica_fecha_apertura DateTime                 @db.Date
+  historia_clinica_estado         String                   @default("A") @db.Char(1)
+  citas                           tbl_cita[]
+  tbl_examen_optometrico          tbl_examen_optometrico[]
+  perfil                          tbl_perfil               @relation(fields: [paciente_id], references: [perfil_id], onDelete: Cascade)
+}
+
+model tbl_estado_cita {
+  estado_cita_id          Int        @id @default(autoincrement())
+  estado_cita_nombre      String     @unique @db.VarChar(100)
+  estado_cita_descripcion String     @unique @db.VarChar(500)
+  estado_cita_estado      String     @default("A") @db.Char(1)
+  citas                   tbl_cita[]
+}
+
+model tbl_cita {
+  cita_id                   Int                     @id @default(autoincrement())
+  horario_doctor_id         Int
+  historia_clinica_id       Int
+  cita_fecha                DateTime                @db.Date
+  cita_motivo               String                  @db.VarChar(500)
+  estado_cita_id            Int
+  cita_notificacion_enviada Boolean                 @default(false)
+  cita_motivo_cancelacion   String?                 @db.VarChar(500)
+  estado_cita               tbl_estado_cita         @relation(fields: [estado_cita_id], references: [estado_cita_id], onDelete: Cascade)
+  historia_clinica          tbl_historia_clinica    @relation(fields: [historia_clinica_id], references: [historia_clinica_id], onDelete: Cascade)
+  horario_doctor            tbl_horario_doctor      @relation(fields: [horario_doctor_id], references: [horario_doctor_id], onDelete: Cascade)
+  tbl_examen_optometrico    tbl_examen_optometrico?
+}
+
+model tbl_examen_optometrico {
+  examen_optometrico_id             Int                  @id @default(autoincrement())
+  historia_clinica_id               Int
+  cita_id                           Int?                 @unique
+  examinador_id                     Int?
+  examen_fecha                      DateTime             @default(now()) @db.Date
+  examen_hora                       DateTime?            @db.Time(6)
+  examen_consultorio                String?              @db.VarChar(100)
+  examen_llave                      String?              @db.VarChar(100)
+  examen_motivo_consulta            String?
+  examen_anamnesis                  String?
+  antecedentes_personales_oculares  String?
+  antecedentes_personales_generales String?
+  antecedentes_familiares_oculares  String?
+  antecedentes_familiares_generales String?
+  lensometria                       Json                 @default("{}")
+  agudeza_visual                    Json                 @default("{}")
+  biomicroscopia                    Json                 @default("{}")
+  reflejos_pupilares                Json                 @default("{}")
+  oftalmoscopia                     Json                 @default("{}")
+  examen_motor                      Json                 @default("{}")
+  queratometria                     Json                 @default("{}")
+  refraccion                        Json                 @default("{}")
+  diagnostico_od                    String?
+  diagnostico_oi                    String?
+  diagnostico_motor                 String?
+  cie10                             String?              @db.VarChar(20)
+  patologico_presuntivo             String?
+  tratamiento_conducta              String?
+  consentimiento_informado          Boolean              @default(false)
+  consentimiento_firma              String?
+  examen_nombre_examinador          String?              @db.VarChar(150)
+  examen_nivel_paralelo_jornada     String?              @db.VarChar(150)
+  examen_estado                     String               @default("B") @db.Char(1)
+  examen_creado_en                  DateTime             @default(now())
+  examen_actualizado_en             DateTime
+  tbl_cita                          tbl_cita?            @relation(fields: [cita_id], references: [cita_id])
+  tbl_usuario                       tbl_usuario?         @relation(fields: [examinador_id], references: [usuario_id])
+  tbl_historia_clinica              tbl_historia_clinica @relation(fields: [historia_clinica_id], references: [historia_clinica_id], onDelete: Cascade)
+
+  @@index([examen_estado])
+  @@index([examen_fecha])
+  @@index([examinador_id])
+  @@index([historia_clinica_id])
+}
+
+model tbl_push_token {
+  push_token_id  Int         @id @default(autoincrement())
+  usuario_id     Int
+  token          String      @unique @db.VarChar(255)
+  creado_en      DateTime    @default(now())
+  actualizado_en DateTime
+  tbl_usuario    tbl_usuario @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade)
+}
+
+model tbl_reset_token {
+  reset_token_id         Int         @id @default(autoincrement())
+  usuario_id             Int
+  reset_token_hash       String      @db.VarChar(255)
+  reset_token_expires_at DateTime
+  reset_token_usado      Boolean     @default(false)
+  reset_token_created_at DateTime    @default(now())
+  reset_token_used_at    DateTime?
+  tbl_usuario            tbl_usuario @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade)
+}
+
+// Módulo de Inventario
+model tbl_categoria_producto {
+  categoria_producto_id          Int            @id @default(autoincrement())
+  categoria_producto_nombre      String         @unique @db.VarChar(100)
+  categoria_producto_descripcion String?        @db.VarChar(500)
+  categoria_producto_estado      String         @default("A") @db.Char(1)
+  productos                      tbl_producto[]
+}
+
+model tbl_producto {
+  producto_id              Int                        @id @default(autoincrement())
+  categoria_producto_id    Int
+  producto_codigo          String                     @unique @db.VarChar(50)
+  producto_nombre          String                     @db.VarChar(150)
+  producto_descripcion     String?                    @db.VarChar(500)
+  producto_precio_unitario Decimal                    @default(0.00) @db.Decimal(10, 2)
+  producto_stock_actual    Int                        @default(0)
+  producto_stock_minimo    Int                        @default(5)
+  producto_unidad_medida   String                     @db.VarChar(50)
+  producto_estado          String                     @default("A") @db.Char(1)
+  categoria                tbl_categoria_producto     @relation(fields: [categoria_producto_id], references: [categoria_producto_id], onDelete: Cascade)
+  movimientos              tbl_movimiento_inventario[]
+  detalles_factura         tbl_detalle_factura[]
+}
+
+model tbl_movimiento_inventario {
+  movimiento_id       Int          @id @default(autoincrement())
+  producto_id         Int
+  usuario_id          Int
+  movimiento_tipo     String       @db.VarChar(20) // "ENTRADA", "SALIDA", "AJUSTE"
+  movimiento_cantidad Int
+  movimiento_motivo   String?      @db.VarChar(500)
+  movimiento_fecha    DateTime     @default(now())
+  producto            tbl_producto @relation(fields: [producto_id], references: [producto_id], onDelete: Cascade)
+  usuario             tbl_usuario  @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade)
+}
+
+// Módulo de Facturación Interna
+model tbl_factura {
+  factura_id       Int                   @id @default(autoincrement())
+  cliente_id       Int                   // FK a tbl_persona
+  factura_numero   String                @unique @db.VarChar(20) // Ej: FAC-00001
+  factura_fecha    DateTime              @default(now())
+  metodo_pago      String                @default("Efectivo") @db.VarChar(50) // Efectivo, Tarjeta, Transferencia
+  // Subtotales agrupados por tasa de IVA (Ecuador: 0%, 5%, 8%, 15%)
+  subtotal_iva_0   Decimal               @default(0.00) @db.Decimal(10, 2)
+  subtotal_iva_5   Decimal               @default(0.00) @db.Decimal(10, 2)
+  subtotal_iva_8   Decimal               @default(0.00) @db.Decimal(10, 2)
+  subtotal_iva_15  Decimal               @default(0.00) @db.Decimal(10, 2)
+  iva_5            Decimal               @default(0.00) @db.Decimal(10, 2)
+  iva_8            Decimal               @default(0.00) @db.Decimal(10, 2)
+  iva_15           Decimal               @default(0.00) @db.Decimal(10, 2)
+  total            Decimal               @default(0.00) @db.Decimal(10, 2)
+  factura_notas    String?               @db.VarChar(500)
+  factura_estado   String                @default("A") @db.Char(1) // A = Activa, I = Anulada
+  factura_creada   DateTime              @default(now())
+  cliente          tbl_persona           @relation(fields: [cliente_id], references: [persona_id])
+  detalles         tbl_detalle_factura[]
+
+  @@index([factura_fecha])
+  @@index([factura_estado])
+  @@index([cliente_id])
+}
+
+model tbl_detalle_factura {
+  detalle_id          Int           @id @default(autoincrement())
+  factura_id          Int
+  producto_id         Int?          // NULL si es concepto libre (ej. "Reparación de lentes")
+  detalle_concepto    String        @db.VarChar(255) // Nombre del producto o descripción manual
+  detalle_cantidad    Int           @default(1)
+  detalle_precio_unit Decimal       @db.Decimal(10, 2)
+  detalle_tarifa_iva  Int           @default(15) // 0, 5, 8 ó 15 (porcentaje entero)
+  detalle_iva_valor   Decimal       @default(0.00) @db.Decimal(10, 2)
+  detalle_subtotal    Decimal       @db.Decimal(10, 2) // precio_unit * cantidad (sin IVA)
+  detalle_total       Decimal       @db.Decimal(10, 2) // subtotal + iva_valor
+  factura             tbl_factura   @relation(fields: [factura_id], references: [factura_id], onDelete: Cascade)
+  producto            tbl_producto? @relation(fields: [producto_id], references: [producto_id])
 }
 
 enum enum_dias {
@@ -129,48 +307,3 @@ enum enum_dias {
   Viernes
 }
 
-model tbl_horario_doctor {
-  horario_doctor_id     Int        @id @default(autoincrement())
-  doctor_id             Int
-  horario_doctor_dia    enum_dias
-  horario_doctor_inicio DateTime   @db.Time
-  horario_doctor_fin    DateTime   @db.Time
-  horario_doctor_estado String     @default("A") @db.Char(1)
-
-  doctor                tbl_doctor @relation(fields: [doctor_id], references: [doctor_id], onDelete: Cascade, onUpdate: Cascade)
-  citas                 tbl_cita[]
-}
-
-// Gestión de Citas
-model tbl_historia_clinica {
-  historia_clinica_id             Int        @id @default(autoincrement())
-  paciente_id                     Int
-  historia_clinica_numero         String     @unique @db.VarChar(20)
-  historia_clinica_fecha_apertura DateTime   @db.Date
-  historia_clinica_estado         String     @default("A") @db.Char(1)
-
-  perfil                          tbl_perfil @relation(fields: [paciente_id], references: [perfil_id], onDelete: Cascade, onUpdate: Cascade)
-  citas                           tbl_cita[]
-}
-
-model tbl_estado_cita {
-  estado_cita_id          Int        @id @default(autoincrement())
-  estado_cita_nombre      String     @unique @db.VarChar(100)
-  estado_cita_descripcion String     @unique @db.VarChar(500)
-  estado_cita_estado      String     @default("A") @db.Char(1)
-
-  citas                   tbl_cita[]
-}
-
-model tbl_cita {
-  cita_id             Int                   @id @default(autoincrement())
-  horario_doctor_id   Int
-  historia_clinica_id Int
-  cita_fecha          DateTime              @db.Date
-  cita_motivo         String                @db.VarChar(500)
-  estado_cita_id      Int
-
-  horario_doctor      tbl_horario_doctor    @relation(fields: [horario_doctor_id], references: [horario_doctor_id], onDelete: Cascade, onUpdate: Cascade)
-  historia_clinica    tbl_historia_clinica  @relation(fields: [historia_clinica_id], references: [historia_clinica_id], onDelete: Cascade, onUpdate: Cascade)
-  estado_cita         tbl_estado_cita       @relation(fields: [estado_cita_id], references: [estado_cita_id], onDelete: Cascade, onUpdate: Cascade)
-}

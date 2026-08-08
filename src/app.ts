@@ -25,6 +25,12 @@ import historiaClinicaRoutes from "./routes/citas/historiaClinicaRoutes";
 import pacienteCompletoRoutes from "./routes/citas/pacienteCompletoRoutes";
 import estadoCitaRoutes from "./routes/citas/estadoCitaRoutes";
 import citaRoutes from "./routes/citas/citaRoutes";
+// Gestión de Inventario
+import categoriaProductoRoutes from "./routes/inventario/categoriaProductoRoutes";
+import productoRoutes from "./routes/inventario/productoRoutes";
+import movimientoInventarioRoutes from "./routes/inventario/movimientoInventarioRoutes";
+// Facturación Interna
+import facturaRoutes from "./routes/ventas/facturaRoutes";
 
 dotenv.config();
 
@@ -65,6 +71,12 @@ app.use("/api/historias-clinicas", historiaClinicaRoutes);
 app.use("/api/pacientes-completos", pacienteCompletoRoutes);
 app.use("/api/estados-cita", estadoCitaRoutes);
 app.use("/api/citas", citaRoutes);
+// Gestión de Inventario
+app.use("/api/categorias-producto", categoriaProductoRoutes);
+app.use("/api/productos", productoRoutes);
+app.use("/api/movimientos-inventario", movimientoInventarioRoutes);
+// Facturación Interna
+app.use("/api/facturas", facturaRoutes);
 
 // Puerto
 const PORT = process.env.PORT || 3000;

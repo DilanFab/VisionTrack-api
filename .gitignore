@@ -10,3 +10,4 @@ dist/
 !/uploads/usuarios/
 /uploads/usuarios/*
 !/uploads/usuarios/.gitkeep
+*.docx

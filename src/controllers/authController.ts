@@ -190,18 +190,28 @@ export const register = async (req: Request, res: Response) => {
         },
       });
 
-      // C. Determinar Rol (3 = Médico, 4 = Paciente)
-      const rolId = tipo === "doctor" ? 3 : 4;
+
+      // C. Determinar Rol por nombre (más robusto que hardcodear el ID)
+      const rolNombre = tipo === "doctor" ? "Médico" : "Paciente";
+      const rol = await tx.tbl_rol.findFirst({
+        where: { rol_nombre: rolNombre, rol_estado: "A" },
+      });
+      if (!rol) {
+        throw new Error(
+          `El rol '${rolNombre}' no existe en la base de datos. Ejecuta el seed: npm run seed`
+        );
+      }
       const perfil = await tx.tbl_perfil.create({
         data: {
           usuario_id: usuario.usuario_id,
-          rol_id: rolId,
+          rol_id: rol.rol_id,
           perfil_estado: "A",
         },
         include: {
           rol: true,
         },
       });
+
 
       // D. Crear registros específicos según el tipo
       if (tipo === "doctor") {
