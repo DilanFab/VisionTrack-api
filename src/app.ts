@@ -35,6 +35,7 @@ import productoRoutes from "./routes/inventario/productoRoutes";
 import movimientoInventarioRoutes from "./routes/inventario/movimientoInventarioRoutes";
 // Facturación Interna
 import facturaRoutes from "./routes/ventas/facturaRoutes";
+import configuracionIvaRoutes from "./routes/ventas/configuracionIvaRoutes";
 import examenOptometricoRoutes from "./routes/citas/examenOptometricoRoutes";
 // App Móvil
 import pacienteMovilRoutes from "./routes/movil/pacienteRoutes";
@@ -97,6 +98,7 @@ app.use("/api/productos", productoRoutes);
 app.use("/api/movimientos-inventario", movimientoInventarioRoutes);
 // Facturación Interna
 app.use("/api/facturas", facturaRoutes);
+app.use("/api/configuracion-iva", configuracionIvaRoutes);
 app.use("/api/examenes-optometricos", examenOptometricoRoutes);
 // App Móvil
 app.use("/api/movil", pacienteMovilRoutes);

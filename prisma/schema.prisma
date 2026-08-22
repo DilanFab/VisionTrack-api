@@ -315,6 +315,15 @@ model tbl_detalle_factura {
   producto            tbl_producto? @relation(fields: [producto_id], references: [producto_id])
 }
 
+// Módulo de Configuración Fiscal
+model tbl_configuracion_iva {
+  iva_id          Int     @id @default(autoincrement())
+  iva_porcentaje  Decimal @unique @db.Decimal(5, 2) // ej: 0.00, 5.00, 8.00, 15.00
+  iva_descripcion String  @db.VarChar(100)           // ej: "IVA 15% (General)"
+  iva_activo      Boolean @default(true)             // si está disponible para usar en facturas
+  iva_estado      String  @default("A") @db.Char(1)  // borrado lógico A/I
+}
+
 enum enum_dias {
   Lunes
   Martes

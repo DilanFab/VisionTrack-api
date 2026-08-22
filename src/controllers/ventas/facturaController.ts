@@ -7,7 +7,7 @@ interface DetalleInput {
   detalle_concepto: string;
   detalle_cantidad: number;
   detalle_precio_unit: number;
-  detalle_tarifa_iva: 0 | 5 | 8 | 15;
+  detalle_tarifa_iva: number; // porcentaje validado contra tbl_configuracion_iva
 }
 
 // Genera número de factura secuencial: FAC-00001
@@ -89,6 +89,24 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
     if (!cliente) {
       res.status(404).json({ success: false, message: "Cliente no encontrado" });
       return;
+    }
+
+    // Obtener todas las tarifas de IVA activas desde la BD
+    const tarifasActivas = await prisma.tbl_configuracion_iva.findMany({
+      where: { iva_activo: true, iva_estado: "A" },
+      select: { iva_porcentaje: true },
+    });
+    const porcentajesPermitidos = tarifasActivas.map((t) => Number(t.iva_porcentaje));
+
+    // Validar que todos los detalles usen tarifas activas
+    for (const d of detalles) {
+      if (!porcentajesPermitidos.includes(Number(d.detalle_tarifa_iva))) {
+        res.status(400).json({
+          success: false,
+          message: `La tarifa de IVA ${d.detalle_tarifa_iva}% no está activa. Tarifas disponibles: ${porcentajesPermitidos.join("%, ")}%`,
+        });
+        return;
+      }
     }
 
     // Acumuladores para los totales por tarifa
