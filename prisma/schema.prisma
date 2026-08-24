@@ -257,6 +257,8 @@ model tbl_producto {
   producto_stock_minimo    Int                        @default(5)
   producto_unidad_medida   String                     @db.VarChar(50)
   producto_estado          String                     @default("A") @db.Char(1)
+  iva_id                   Int?
+  configuracion_iva        tbl_configuracion_iva?     @relation(fields: [iva_id], references: [iva_id])
   categoria                tbl_categoria_producto     @relation(fields: [categoria_producto_id], references: [categoria_producto_id], onDelete: Cascade)
   movimientos              tbl_movimiento_inventario[]
   detalles_factura         tbl_detalle_factura[]
@@ -322,6 +324,7 @@ model tbl_configuracion_iva {
   iva_descripcion String  @db.VarChar(100)           // ej: "IVA 15% (General)"
   iva_activo      Boolean @default(true)             // si está disponible para usar en facturas
   iva_estado      String  @default("A") @db.Char(1)  // borrado lógico A/I
+  productos       tbl_producto[]
 }
 
 enum enum_dias {

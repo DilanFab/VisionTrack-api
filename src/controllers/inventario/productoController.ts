@@ -7,6 +7,7 @@ export const getProductos = async (req: Request, res: Response): Promise<void> =
     const productos = await prisma.tbl_producto.findMany({
       include: {
         categoria: true,
+        configuracion_iva: true,
       },
       orderBy: { producto_nombre: "asc" },
     });
@@ -24,6 +25,7 @@ export const getProductoById = async (req: Request, res: Response): Promise<void
       where: { producto_id: Number(id) },
       include: {
         categoria: true,
+        configuracion_iva: true,
         movimientos: {
           include: {
             usuario: {
@@ -51,7 +53,7 @@ export const getProductoById = async (req: Request, res: Response): Promise<void
 export const getProductosStockBajo = async (req: Request, res: Response): Promise<void> => {
   try {
     const productos = await prisma.tbl_producto.findMany({
-      include: { categoria: true },
+      include: { categoria: true, configuracion_iva: true },
       orderBy: { producto_stock_actual: "asc" },
     });
 
@@ -77,6 +79,7 @@ export const createProducto = async (req: Request, res: Response): Promise<void>
       producto_stock_actual,
       producto_stock_minimo,
       producto_unidad_medida,
+      iva_id,
     } = req.body;
 
     if (!categoria_producto_id || !producto_codigo || !producto_nombre || !producto_unidad_medida) {
@@ -97,9 +100,11 @@ export const createProducto = async (req: Request, res: Response): Promise<void>
         producto_stock_actual: producto_stock_actual ? Number(producto_stock_actual) : 0,
         producto_stock_minimo: producto_stock_minimo ? Number(producto_stock_minimo) : 5,
         producto_unidad_medida: producto_unidad_medida.trim(),
+        iva_id: iva_id ? Number(iva_id) : null,
       },
       include: {
         categoria: true,
+        configuracion_iva: true,
       },
     });
 
@@ -127,6 +132,7 @@ export const updateProducto = async (req: Request, res: Response): Promise<void>
       producto_stock_minimo,
       producto_unidad_medida,
       producto_estado,
+      iva_id,
     } = req.body;
 
     const productoExistente = await prisma.tbl_producto.findUnique({
@@ -150,9 +156,11 @@ export const updateProducto = async (req: Request, res: Response): Promise<void>
         producto_stock_minimo: producto_stock_minimo !== undefined ? Number(producto_stock_minimo) : undefined,
         producto_unidad_medida: producto_unidad_medida ? producto_unidad_medida.trim() : undefined,
         producto_estado: producto_estado !== undefined ? producto_estado : undefined,
+        iva_id: iva_id !== undefined ? (iva_id ? Number(iva_id) : null) : undefined,
       },
       include: {
         categoria: true,
+        configuracion_iva: true,
       },
     });
 
