@@ -98,15 +98,30 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
     });
     const porcentajesPermitidos = tarifasActivas.map((t) => Number(t.iva_porcentaje));
 
-    // Validar que todos los detalles usen tarifas activas
+    // Validar y procesar detalles (asignando el IVA real del producto si aplica)
+    const detallesProcesados = [];
     for (const d of detalles) {
-      if (!porcentajesPermitidos.includes(Number(d.detalle_tarifa_iva))) {
+      let tarifa = Number(d.detalle_tarifa_iva ?? 15);
+
+      if (d.producto_id) {
+        const p = await prisma.tbl_producto.findUnique({
+          where: { producto_id: Number(d.producto_id) },
+          include: { configuracion_iva: true }
+        });
+        if (p && p.configuracion_iva) {
+          tarifa = Number(p.configuracion_iva.iva_porcentaje);
+        }
+      }
+
+      if (!porcentajesPermitidos.includes(tarifa)) {
         res.status(400).json({
           success: false,
-          message: `La tarifa de IVA ${d.detalle_tarifa_iva}% no está activa. Tarifas disponibles: ${porcentajesPermitidos.join("%, ")}%`,
+          message: `La tarifa de IVA ${tarifa}% no está activa. Tarifas disponibles: ${porcentajesPermitidos.join("%, ")}%`,
         });
         return;
       }
+
+      detallesProcesados.push({ ...d, detalle_tarifa_iva: tarifa });
     }
 
     // Acumuladores para los totales por tarifa
@@ -114,10 +129,10 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
     let iva5 = 0, iva8 = 0, iva15 = 0;
 
     // Calcular valores por detalle
-    const detallesCalculados = detalles.map((d) => {
+    const detallesCalculados = detallesProcesados.map((d) => {
       const cantidad = Number(d.detalle_cantidad);
       const precioUnit = Number(d.detalle_precio_unit);
-      const tarifa = d.detalle_tarifa_iva ?? 15;
+      const tarifa = d.detalle_tarifa_iva;
       const subtotal = parseFloat((cantidad * precioUnit).toFixed(2));
       const ivaValor = parseFloat((subtotal * (tarifa / 100)).toFixed(2));
       const total = parseFloat((subtotal + ivaValor).toFixed(2));
@@ -187,7 +202,7 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
           await tx.tbl_movimiento_inventario.create({
             data: {
               producto_id: d.producto_id,
-              usuario_id: (req as any).user?.usuario_id ?? 1, // del token JWT si existe
+              usuario_id: (req as any).usuario?.usuario_id ?? 1, // del token JWT si existe
               movimiento_tipo: "SALIDA",
               movimiento_cantidad: d.detalle_cantidad,
               movimiento_motivo: `Venta - ${nuevaFactura.factura_numero}`,
@@ -247,7 +262,7 @@ export const anularFactura = async (req: Request, res: Response): Promise<void> 
           await tx.tbl_movimiento_inventario.create({
             data: {
               producto_id: d.producto_id,
-              usuario_id: (req as any).user?.usuario_id ?? 1,
+              usuario_id: (req as any).usuario?.usuario_id ?? 1,
               movimiento_tipo: "ENTRADA",
               movimiento_cantidad: d.detalle_cantidad,
               movimiento_motivo: `Anulación - ${factura.factura_numero}`,
