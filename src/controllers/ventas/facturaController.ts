@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
 import prisma from "../../config/prisma";
+import {
+  resolverTarifaEfectiva,
+  esTarifaIvaActiva,
+  calcularDetalle,
+  calcularTotalesPorTarifa,
+} from "../../utils/facturacion";
 
 // ─── Tipos helpers ───────────────────────────────────────────────────────────
 interface DetalleInput {
@@ -103,17 +109,18 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
     for (const d of detalles) {
       let tarifa = Number(d.detalle_tarifa_iva ?? 15);
 
+      let productoConIva = null;
       if (d.producto_id) {
-        const p = await prisma.tbl_producto.findUnique({
+        productoConIva = await prisma.tbl_producto.findUnique({
           where: { producto_id: Number(d.producto_id) },
-          include: { configuracion_iva: true }
+          include: { configuracion_iva: true },
         });
-        if (p && p.configuracion_iva) {
-          tarifa = Number(p.configuracion_iva.iva_porcentaje);
-        }
       }
 
-      if (!porcentajesPermitidos.includes(tarifa)) {
+      // Se fuerza la tarifa configurada en el producto (si existe) sobre la enviada
+      tarifa = resolverTarifaEfectiva(tarifa, productoConIva);
+
+      if (!esTarifaIvaActiva(tarifa, porcentajesPermitidos)) {
         res.status(400).json({
           success: false,
           message: `La tarifa de IVA ${tarifa}% no está activa. Tarifas disponibles: ${porcentajesPermitidos.join("%, ")}%`,
@@ -124,23 +131,12 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
       detallesProcesados.push({ ...d, detalle_tarifa_iva: tarifa });
     }
 
-    // Acumuladores para los totales por tarifa
-    let sub0 = 0, sub5 = 0, sub8 = 0, sub15 = 0;
-    let iva5 = 0, iva8 = 0, iva15 = 0;
+    // Calcular valores por detalle y acumular totales por tarifa
+    const totales = calcularTotalesPorTarifa(detallesProcesados);
 
-    // Calcular valores por detalle
     const detallesCalculados = detallesProcesados.map((d) => {
-      const cantidad = Number(d.detalle_cantidad);
-      const precioUnit = Number(d.detalle_precio_unit);
+      const { cantidad, precioUnit, subtotal, ivaValor, total } = calcularDetalle(d);
       const tarifa = d.detalle_tarifa_iva;
-      const subtotal = parseFloat((cantidad * precioUnit).toFixed(2));
-      const ivaValor = parseFloat((subtotal * (tarifa / 100)).toFixed(2));
-      const total = parseFloat((subtotal + ivaValor).toFixed(2));
-
-      if (tarifa === 0)  sub0  += subtotal;
-      if (tarifa === 5)  { sub5  += subtotal; iva5  += ivaValor; }
-      if (tarifa === 8)  { sub8  += subtotal; iva8  += ivaValor; }
-      if (tarifa === 15) { sub15 += subtotal; iva15 += ivaValor; }
 
       return {
         producto_id: d.producto_id ?? null,
@@ -154,9 +150,7 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
       };
     });
 
-    const totalGeneral = parseFloat(
-      (sub0 + sub5 + sub8 + sub15 + iva5 + iva8 + iva15).toFixed(2)
-    );
+    const totalGeneral = totales.total;
 
     const numeroFactura = await generarNumeroFactura();
 
@@ -169,13 +163,13 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
           factura_numero: numeroFactura,
           metodo_pago: metodo_pago || "Efectivo",
           factura_notas: factura_notas || null,
-          subtotal_iva_0: sub0,
-          subtotal_iva_5: sub5,
-          subtotal_iva_8: sub8,
-          subtotal_iva_15: sub15,
-          iva_5: iva5,
-          iva_8: iva8,
-          iva_15: iva15,
+          subtotal_iva_0: totales.subtotal_iva_0,
+          subtotal_iva_5: totales.subtotal_iva_5,
+          subtotal_iva_8: totales.subtotal_iva_8,
+          subtotal_iva_15: totales.subtotal_iva_15,
+          iva_5: totales.iva_5,
+          iva_8: totales.iva_8,
+          iva_15: totales.iva_15,
           total: totalGeneral,
           detalles: { create: detallesCalculados },
         },
