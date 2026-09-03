@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,9 +6,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// Database schema
-
-// Gestión de Usuarios
 model tbl_genero {
   genero_id     Int    @id @default(autoincrement())
   genero_nombre String @unique @db.VarChar(20)
@@ -36,8 +28,9 @@ model tbl_persona {
   persona_correo           String   @db.VarChar(500)
   persona_estado           String   @default("A") @db.Char(1)
 
-  genero  tbl_genero   @relation(fields: [genero_id], references: [genero_id], onDelete: Cascade, onUpdate: Cascade)
-  usuario tbl_usuario?
+  genero   tbl_genero    @relation(fields: [genero_id], references: [genero_id], onDelete: Cascade, onUpdate: Cascade)
+  usuario  tbl_usuario?
+  facturas tbl_factura[]
 }
 
 model tbl_usuario {
@@ -50,14 +43,14 @@ model tbl_usuario {
   usuario_cambiar_contrasena Int    @default(1) @db.SmallInt
   usuario_estado             String @default("A") @db.Char(1)
 
-  persona               tbl_persona              @relation(fields: [persona_id], references: [persona_id], onDelete: Cascade, onUpdate: Cascade)
-  perfiles              tbl_perfil[]
-  push_tokens           tbl_push_token[]
-  reset_tokens          tbl_reset_token[]
-  examenes_optometricos tbl_examen_optometrico[]
+  persona                tbl_persona                 @relation(fields: [persona_id], references: [persona_id], onDelete: Cascade, onUpdate: Cascade)
+  perfiles               tbl_perfil[]
+  push_tokens            tbl_push_token[]
+  reset_tokens           tbl_reset_token[]
+  examenes_optometricos  tbl_examen_optometrico[]
+  movimientos_inventario tbl_movimiento_inventario[]
 }
 
-// Gestion de Roles y Permisos
 model tbl_menu {
   menu_id         Int     @id @default(autoincrement())
   menu_padre      Int?    @default(dbgenerated("NULL"))
@@ -105,7 +98,6 @@ model tbl_perfil {
   historias_clinicas tbl_historia_clinica[]
 }
 
-// Gestión de Médicos
 model tbl_especialidad_medica {
   especialidad_medica_id          Int    @id @default(autoincrement())
   especialidad_medica_nombre      String @db.VarChar(100)
@@ -124,14 +116,6 @@ model tbl_doctor {
   especialidad_medica tbl_especialidad_medica @relation(fields: [especialidad_medica_id], references: [especialidad_medica_id], onDelete: Cascade, onUpdate: Cascade)
   perfil              tbl_perfil              @relation(fields: [perfil_id], references: [perfil_id], onDelete: Cascade, onUpdate: Cascade)
   horarios            tbl_horario_doctor[]
-}
-
-enum enum_dias {
-  Lunes
-  Martes
-  Miercoles
-  Jueves
-  Viernes
 }
 
 model tbl_horario_doctor {
@@ -176,6 +160,7 @@ model tbl_cita {
   cita_motivo               String   @db.VarChar(500)
   estado_cita_id            Int
   cita_notificacion_enviada Boolean  @default(false)
+  cita_motivo_cancelacion   String?  @db.VarChar(500)
 
   horario_doctor     tbl_horario_doctor      @relation(fields: [horario_doctor_id], references: [horario_doctor_id], onDelete: Cascade, onUpdate: Cascade)
   historia_clinica   tbl_historia_clinica    @relation(fields: [historia_clinica_id], references: [historia_clinica_id], onDelete: Cascade, onUpdate: Cascade)
@@ -250,4 +235,102 @@ model tbl_reset_token {
   reset_token_used_at    DateTime?
 
   usuario tbl_usuario @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+// Módulo de Inventario
+model tbl_categoria_producto {
+  categoria_producto_id          Int            @id @default(autoincrement())
+  categoria_producto_nombre      String         @unique @db.VarChar(100)
+  categoria_producto_descripcion String?        @db.VarChar(500)
+  categoria_producto_estado      String         @default("A") @db.Char(1)
+  productos                      tbl_producto[]
+}
+
+model tbl_producto {
+  producto_id              Int                        @id @default(autoincrement())
+  categoria_producto_id    Int
+  producto_codigo          String                     @unique @db.VarChar(50)
+  producto_nombre          String                     @db.VarChar(150)
+  producto_descripcion     String?                    @db.VarChar(500)
+  producto_precio_unitario Decimal                    @default(0.00) @db.Decimal(10, 2)
+  producto_stock_actual    Int                        @default(0)
+  producto_stock_minimo    Int                        @default(5)
+  producto_unidad_medida   String                     @db.VarChar(50)
+  producto_estado          String                     @default("A") @db.Char(1)
+  iva_id                   Int?
+  configuracion_iva        tbl_configuracion_iva?     @relation(fields: [iva_id], references: [iva_id])
+  categoria                tbl_categoria_producto     @relation(fields: [categoria_producto_id], references: [categoria_producto_id], onDelete: Cascade)
+  movimientos              tbl_movimiento_inventario[]
+  detalles_factura         tbl_detalle_factura[]
+}
+
+model tbl_movimiento_inventario {
+  movimiento_id       Int          @id @default(autoincrement())
+  producto_id         Int
+  usuario_id          Int
+  movimiento_tipo     String       @db.VarChar(20) // "ENTRADA", "SALIDA", "AJUSTE"
+  movimiento_cantidad Int
+  movimiento_motivo   String?      @db.VarChar(500)
+  movimiento_fecha    DateTime     @default(now())
+  producto            tbl_producto @relation(fields: [producto_id], references: [producto_id], onDelete: Cascade)
+  usuario             tbl_usuario  @relation(fields: [usuario_id], references: [usuario_id], onDelete: Cascade)
+}
+
+// Módulo de Facturación Interna
+model tbl_factura {
+  factura_id       Int                   @id @default(autoincrement())
+  cliente_id       Int                   // FK a tbl_persona
+  factura_numero   String                @unique @db.VarChar(20) // Ej: FAC-00001
+  factura_fecha    DateTime              @default(now())
+  metodo_pago      String                @default("Efectivo") @db.VarChar(50) // Efectivo, Tarjeta, Transferencia
+  subtotal_iva_0   Decimal               @default(0.00) @db.Decimal(10, 2)
+  subtotal_iva_5   Decimal               @default(0.00) @db.Decimal(10, 2)
+  subtotal_iva_8   Decimal               @default(0.00) @db.Decimal(10, 2)
+  subtotal_iva_15  Decimal               @default(0.00) @db.Decimal(10, 2)
+  iva_5            Decimal               @default(0.00) @db.Decimal(10, 2)
+  iva_8            Decimal               @default(0.00) @db.Decimal(10, 2)
+  iva_15           Decimal               @default(0.00) @db.Decimal(10, 2)
+  total            Decimal               @default(0.00) @db.Decimal(10, 2)
+  factura_notas    String?               @db.VarChar(500)
+  factura_estado   String                @default("A") @db.Char(1) // A = Activa, I = Anulada
+  factura_creada   DateTime              @default(now())
+  cliente          tbl_persona           @relation(fields: [cliente_id], references: [persona_id])
+  detalles         tbl_detalle_factura[]
+
+  @@index([factura_fecha])
+  @@index([factura_estado])
+  @@index([cliente_id])
+}
+
+model tbl_detalle_factura {
+  detalle_id          Int           @id @default(autoincrement())
+  factura_id          Int
+  producto_id         Int?          // NULL si es concepto libre (ej. "Reparación de lentes")
+  detalle_concepto    String        @db.VarChar(255) // Nombre del producto o descripción manual
+  detalle_cantidad    Int           @default(1)
+  detalle_precio_unit Decimal       @db.Decimal(10, 2)
+  detalle_tarifa_iva  Int           @default(15) // 0, 5, 8 ó 15 (porcentaje entero)
+  detalle_iva_valor   Decimal       @default(0.00) @db.Decimal(10, 2)
+  detalle_subtotal    Decimal       @db.Decimal(10, 2) // precio_unit * cantidad (sin IVA)
+  detalle_total       Decimal       @db.Decimal(10, 2) // subtotal + iva_valor
+  factura             tbl_factura   @relation(fields: [factura_id], references: [factura_id], onDelete: Cascade)
+  producto            tbl_producto? @relation(fields: [producto_id], references: [producto_id])
+}
+
+// Módulo de Configuración Fiscal
+model tbl_configuracion_iva {
+  iva_id          Int     @id @default(autoincrement())
+  iva_porcentaje  Decimal @unique @db.Decimal(5, 2) // ej: 0.00, 5.00, 8.00, 15.00
+  iva_descripcion String  @db.VarChar(100)           // ej: "IVA 15% (General)"
+  iva_activo      Boolean @default(true)             // si está disponible para usar en facturas
+  iva_estado      String  @default("A") @db.Char(1)  // borrado lógico A/I
+  productos       tbl_producto[]
+}
+
+enum enum_dias {
+  Lunes
+  Martes
+  Miercoles
+  Jueves
+  Viernes
 }

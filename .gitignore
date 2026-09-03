@@ -1,4 +1,6 @@
 node_modules
+# Editor workspace files
+*.code-workspace
 # Keep environment variables out of version control
 .env
 
@@ -10,3 +12,4 @@ dist/
 !/uploads/usuarios/
 /uploads/usuarios/*
 !/uploads/usuarios/.gitkeep
+*.docx
