@@ -1,0 +1,10 @@
+import { Router } from "express";
+import { verifyToken, authorize } from "../middlewares/auth";
+import { reporteVentas, reporteCompras, reporteInventario, reporteCitas } from "../controllers/reportesController";
+const router = Router();
+router.use(verifyToken, authorize("Administrador", "Recepcionista"));
+router.get("/ventas", reporteVentas);
+router.get("/compras", reporteCompras);
+router.get("/inventario", reporteInventario);
+router.get("/citas", reporteCitas);
+export default router;

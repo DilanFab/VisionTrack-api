@@ -45,6 +45,8 @@ export const getFacturas = async (req: Request, res: Response): Promise<void> =>
         detalles: {
           include: { producto: { select: { producto_nombre: true, producto_codigo: true } } },
         },
+        abonos: true,
+        notas_credito: true,
       },
       orderBy: { factura_fecha: "desc" },
     });
@@ -63,6 +65,8 @@ export const getFacturaById = async (req: Request, res: Response): Promise<void>
       include: {
         cliente: true,
         detalles: { include: { producto: true } },
+        abonos: true,
+        notas_credito: true,
       },
     });
     if (!factura) {

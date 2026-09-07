@@ -54,6 +54,9 @@ model tbl_usuario {
   movimientos_caja       tbl_movimiento_caja[]
   auditorias_examen      tbl_auditoria_examen[]
   auditorias_autorizadas tbl_auditoria_examen[]      @relation("AuditoriaAutorizada")
+  compras_creadas        tbl_compra[]
+  abonos_registrados     tbl_abono_factura[]
+  notas_credito_creadas  tbl_nota_credito[]
 }
 
 model tbl_menu {
@@ -268,6 +271,7 @@ model tbl_producto {
   categoria                tbl_categoria_producto      @relation(fields: [categoria_producto_id], references: [categoria_producto_id], onDelete: Cascade)
   movimientos              tbl_movimiento_inventario[]
   detalles_factura         tbl_detalle_factura[]
+  detalles_compra          tbl_detalle_compra[]
 }
 
 model tbl_movimiento_inventario {
@@ -304,6 +308,8 @@ model tbl_factura {
   cliente         tbl_persona           @relation(fields: [cliente_id], references: [persona_id])
   caja            tbl_caja?             @relation(fields: [caja_id], references: [caja_id], onDelete: SetNull)
   detalles        tbl_detalle_factura[]
+  abonos          tbl_abono_factura[]
+  notas_credito   tbl_nota_credito[]
 
   @@index([factura_fecha])
   @@index([factura_estado])
@@ -324,6 +330,73 @@ model tbl_detalle_factura {
   detalle_total       Decimal       @db.Decimal(10, 2) // subtotal + iva_valor
   factura             tbl_factura   @relation(fields: [factura_id], references: [factura_id], onDelete: Cascade)
   producto            tbl_producto? @relation(fields: [producto_id], references: [producto_id])
+}
+
+model tbl_proveedor {
+  proveedor_id       Int          @id @default(autoincrement())
+  proveedor_ruc      String       @unique @db.VarChar(20)
+  proveedor_nombre   String       @db.VarChar(150)
+  proveedor_telefono String?      @db.VarChar(30)
+  proveedor_correo   String?      @db.VarChar(150)
+  proveedor_estado   String       @default("A") @db.Char(1)
+  compras            tbl_compra[]
+}
+
+model tbl_compra {
+  compra_id          Int                  @id @default(autoincrement())
+  proveedor_id       Int
+  usuario_id         Int
+  compra_numero      String               @unique @db.VarChar(30)
+  compra_fecha       DateTime             @default(now())
+  compra_metodo_pago String               @default("Efectivo") @db.VarChar(50)
+  compra_subtotal    Decimal              @default(0) @db.Decimal(10, 2)
+  compra_total       Decimal              @default(0) @db.Decimal(10, 2)
+  compra_estado      String               @default("A") @db.Char(1)
+  compra_observacion String?              @db.VarChar(500)
+  proveedor          tbl_proveedor        @relation(fields: [proveedor_id], references: [proveedor_id])
+  usuario            tbl_usuario          @relation(fields: [usuario_id], references: [usuario_id])
+  detalles           tbl_detalle_compra[]
+
+  @@index([compra_fecha])
+}
+
+model tbl_detalle_compra {
+  detalle_compra_id Int          @id @default(autoincrement())
+  compra_id         Int
+  producto_id       Int
+  cantidad          Int
+  precio_unitario   Decimal      @db.Decimal(10, 2)
+  subtotal          Decimal      @db.Decimal(10, 2)
+  compra            tbl_compra   @relation(fields: [compra_id], references: [compra_id], onDelete: Cascade)
+  producto          tbl_producto @relation(fields: [producto_id], references: [producto_id])
+}
+
+model tbl_abono_factura {
+  abono_id    Int         @id @default(autoincrement())
+  factura_id  Int
+  usuario_id  Int
+  monto       Decimal     @db.Decimal(10, 2)
+  metodo_pago String      @db.VarChar(50)
+  observacion String?     @db.VarChar(500)
+  creado_en   DateTime    @default(now())
+  factura     tbl_factura @relation(fields: [factura_id], references: [factura_id], onDelete: Cascade)
+  usuario     tbl_usuario @relation(fields: [usuario_id], references: [usuario_id])
+
+  @@index([factura_id])
+}
+
+model tbl_nota_credito {
+  nota_credito_id     Int         @id @default(autoincrement())
+  factura_id          Int
+  usuario_id          Int
+  nota_credito_numero String      @unique @db.VarChar(30)
+  monto               Decimal     @db.Decimal(10, 2)
+  motivo              String      @db.VarChar(500)
+  creado_en           DateTime    @default(now())
+  factura             tbl_factura @relation(fields: [factura_id], references: [factura_id], onDelete: Cascade)
+  usuario             tbl_usuario @relation(fields: [usuario_id], references: [usuario_id])
+
+  @@index([factura_id])
 }
 
 // Módulo de Configuración Fiscal
