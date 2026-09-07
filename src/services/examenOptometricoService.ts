@@ -214,9 +214,24 @@ export const crear = async (body: unknown, usuarioId?: number) => {
   });
 };
 
-export const actualizar = async (id: number, body: unknown) => {
+export const actualizar = async (id: number, body: unknown, contexto?: { usuarioId: number; esAdministrador: boolean; autorizacionAdminId?: number; observacionEdicion?: string }) => {
   const actual = await ensureExamenEditable(id);
   const data = parseOrThrow(examenOptometricoUpdateSchema.safeParse(body));
+  const fechaCreacion = actual.examen_creado_en instanceof Date ? actual.examen_creado_en : new Date(actual.examen_creado_en ?? Date.now());
+  const horasTranscurridas = (Date.now() - fechaCreacion.getTime()) / 3_600_000;
+  const fueraDeVentana = horasTranscurridas > 24;
+  if (fueraDeVentana && !contexto?.esAdministrador) {
+    if (!contexto?.autorizacionAdminId || !contexto.observacionEdicion?.trim()) {
+      throw { status: 403, message: "Después de 24 horas se requiere autorización de un administrador y una observación" };
+    }
+  }
+  if (fueraDeVentana && contexto?.autorizacionAdminId && !contexto.observacionEdicion?.trim()) {
+    throw { status: 400, message: "La observación de edición es obligatoria" };
+  }
+  if (fueraDeVentana && contexto?.autorizacionAdminId) {
+    const autorizador = await prisma.tbl_perfil.findFirst({ where: { usuario_id: contexto.autorizacionAdminId, perfil_estado: "A", rol: { rol_nombre: { equals: "Administrador", mode: "insensitive" } } } });
+    if (!autorizador) throw { status: 403, message: "La autorización debe pertenecer a un administrador activo" };
+  }
   const historiaClinicaId = data.historia_clinica_id ?? actual.historia_clinica_id;
 
   if (data.historia_clinica_id) {
@@ -227,11 +242,22 @@ export const actualizar = async (id: number, body: unknown) => {
     await ensureCitaSinExamen(data.cita_id, id);
   }
 
-  return prisma.tbl_examen_optometrico.update({
+  const actualizado = await prisma.tbl_examen_optometrico.update({
     where: { examen_optometrico_id: id },
     data: toUpdateData(data),
     include: examenOptometricoInclude,
   });
+  if (fueraDeVentana && contexto?.observacionEdicion?.trim()) {
+    await prisma.tbl_auditoria_examen.create({
+      data: {
+        examen_id: id,
+        usuario_id: contexto.usuarioId,
+        autorizado_por_id: contexto.esAdministrador ? contexto.usuarioId : contexto.autorizacionAdminId,
+        motivo: contexto.observacionEdicion.trim(),
+      },
+    });
+  }
+  return actualizado;
 };
 
 export const finalizar = async (id: number) => {

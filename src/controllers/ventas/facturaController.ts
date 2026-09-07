@@ -153,6 +153,7 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
     const totalGeneral = totales.total;
 
     const numeroFactura = await generarNumeroFactura();
+    const cajaAbierta = await prisma.tbl_caja.findFirst({ where: { caja_estado: "ABIERTA" }, orderBy: { caja_fecha_apertura: "desc" } });
 
     // Ejecutar en transacción: crear factura + descontar stock de productos
     const factura = await prisma.$transaction(async (tx) => {
@@ -163,6 +164,7 @@ export const createFactura = async (req: Request, res: Response): Promise<void> 
           factura_numero: numeroFactura,
           metodo_pago: metodo_pago || "Efectivo",
           factura_notas: factura_notas || null,
+          caja_id: cajaAbierta?.caja_id,
           subtotal_iva_0: totales.subtotal_iva_0,
           subtotal_iva_5: totales.subtotal_iva_5,
           subtotal_iva_8: totales.subtotal_iva_8,

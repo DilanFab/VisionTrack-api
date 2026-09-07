@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getCategoriasProducto,
   createCategoriaProducto,
@@ -7,6 +8,8 @@ import {
 } from "../../controllers/inventario/categoriaProductoController";
 
 const router = Router();
+
+router.use(verifyToken, authorize("Administrador", "Recepcionista"));
 
 router.get("/", getCategoriasProducto);
 router.post("/", createCategoriaProducto);

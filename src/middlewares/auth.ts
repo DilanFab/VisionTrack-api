@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const AUTH_BYPASS = process.env.AUTH_BYPASS === "true" && process.env.NODE_ENV !== "production";
 
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET no está definido en las variables de entorno");
@@ -23,7 +24,7 @@ declare global {
 }
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-  if (process.env.AUTH_BYPASS === "true") {
+  if (AUTH_BYPASS) {
     req.usuario = {
       usuario_id: 1,
       usuario_nombre: "bypass",
@@ -60,7 +61,7 @@ export const authorize = (...rolesPermitidos: string[]) => {
   const rolesPermitidosNormalizados = new Set(rolesPermitidos.map(normalizeRoleName));
 
   return (req: Request, res: Response, next: NextFunction) => {
-    if (process.env.AUTH_BYPASS === "true") {
+    if (AUTH_BYPASS) {
       return next();
     }
 

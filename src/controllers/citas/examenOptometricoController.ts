@@ -88,7 +88,14 @@ export const createExamenOptometrico = async (req: Request, res: Response) => {
  */
 export const updateExamenOptometrico = async (req: Request, res: Response) => {
   try {
-    const examen = await examenOptometricoService.actualizar(Number(req.params.id), req.body);
+    const { autorizacion_admin_id, observacion_edicion, ...datos } = req.body as Record<string, unknown>;
+    const esAdministrador = req.usuario?.roles.some((rol) => rol.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === "administrador") ?? false;
+    const examen = await examenOptometricoService.actualizar(Number(req.params.id), datos, {
+      usuarioId: req.usuario!.usuario_id,
+      esAdministrador,
+      autorizacionAdminId: autorizacion_admin_id === undefined ? undefined : Number(autorizacion_admin_id),
+      observacionEdicion: typeof observacion_edicion === "string" ? observacion_edicion : undefined,
+    });
     res.json(examen);
   } catch (error) {
     handleError(res, error, "Error al actualizar el examen optométrico");

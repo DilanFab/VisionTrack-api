@@ -233,6 +233,7 @@ async function main() {
         { menu_nombre: "Productos", ref: "/inventario/productos", icono: "box" },
         { menu_nombre: "Movimientos", ref: "/inventario/movimientos", icono: "right-left" },
         { menu_nombre: "Facturación", ref: "/facturacion", icono: "receipt" },
+        { menu_nombre: "Cierre de caja", ref: "/caja", icono: "cash-register" },
       ];
       for (const h of invHojasData) {
         const hoja = await tx.tbl_menu.upsert({
