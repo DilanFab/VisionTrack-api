@@ -155,11 +155,7 @@ export const getMisCitas = async (req: Request, res: Response) => {
       return;
     }
 
-    const hc = await usuarioService.obtenerHistoriaClinica(perfil.perfil_id);
-    if (!hc) {
-      res.status(404).json({ error: "Historia clínica no encontrada" });
-      return;
-    }
+    const hc = await usuarioService.obtenerOCrearHistoriaClinica(perfil.perfil_id);
 
     const result = await citaService.listarPorPaciente(hc.historia_clinica_id, req.query as any);
     res.json(result);
@@ -257,11 +253,7 @@ export const agendarCita = async (req: Request, res: Response) => {
       return;
     }
 
-    const hc = await usuarioService.obtenerHistoriaClinica(perfil.perfil_id);
-    if (!hc) {
-      res.status(404).json({ error: "Historia clínica no encontrada" });
-      return;
-    }
+    const hc = await usuarioService.obtenerOCrearHistoriaClinica(perfil.perfil_id);
 
     const cita = await citaService.crear({
       horario_doctor_id: Number(horario_doctor_id),

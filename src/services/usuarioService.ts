@@ -87,3 +87,44 @@ export const obtenerHistoriaClinica = async (perfilId: number) => {
     where: { paciente_id: perfilId, historia_clinica_estado: "A" },
   });
 };
+
+export const obtenerOCrearHistoriaClinica = async (perfilId: number) => {
+  let hc = await prisma.tbl_historia_clinica.findFirst({
+    where: { paciente_id: perfilId, historia_clinica_estado: "A" },
+  });
+
+  if (!hc) {
+    const perfil = await prisma.tbl_perfil.findUnique({
+      where: { perfil_id: perfilId },
+      include: {
+        usuario: {
+          include: {
+            persona: true,
+          },
+        },
+      },
+    });
+
+    const cedula = perfil?.usuario?.persona?.persona_cedula;
+    let numero = cedula ? `HC-${cedula}` : `HC-${perfilId}`;
+
+    const existeNumero = await prisma.tbl_historia_clinica.findUnique({
+      where: { historia_clinica_numero: numero },
+    });
+
+    if (existeNumero) {
+      numero = `HC-${perfilId}-${Date.now().toString().slice(-4)}`;
+    }
+
+    hc = await prisma.tbl_historia_clinica.create({
+      data: {
+        paciente_id: perfilId,
+        historia_clinica_numero: numero,
+        historia_clinica_fecha_apertura: new Date(),
+        historia_clinica_estado: "A",
+      },
+    });
+  }
+
+  return hc;
+};
