@@ -52,4 +52,44 @@ describe("usuarioService", () => {
       expect(result).toBeNull();
     });
   });
+
+  describe("obtenerOCrearHistoriaClinica", () => {
+    it("retorna HC existente si ya existe", async () => {
+      (prismaMock.tbl_historia_clinica.findFirst as any).mockResolvedValue({
+        historia_clinica_id: 5,
+        historia_clinica_numero: "HC-1234567890",
+      });
+      const result = await usuarioService.obtenerOCrearHistoriaClinica(1);
+      expect(result).toHaveProperty("historia_clinica_id", 5);
+      expect(prismaMock.tbl_historia_clinica.create).not.toHaveBeenCalled();
+    });
+
+    it("crea y retorna nueva HC si no existía", async () => {
+      (prismaMock.tbl_historia_clinica.findFirst as any).mockResolvedValue(null);
+      (prismaMock.tbl_perfil.findUnique as any).mockResolvedValue({
+        perfil_id: 1,
+        usuario: {
+          persona: {
+            persona_cedula: "1723456789",
+          },
+        },
+      });
+      (prismaMock.tbl_historia_clinica.findUnique as any).mockResolvedValue(null);
+      (prismaMock.tbl_historia_clinica.create as any).mockResolvedValue({
+        historia_clinica_id: 10,
+        paciente_id: 1,
+        historia_clinica_numero: "HC-1723456789",
+      });
+
+      const result = await usuarioService.obtenerOCrearHistoriaClinica(1);
+      expect(result).toHaveProperty("historia_clinica_id", 10);
+      expect(prismaMock.tbl_historia_clinica.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          paciente_id: 1,
+          historia_clinica_numero: "HC-1723456789",
+          historia_clinica_estado: "A",
+        }),
+      });
+    });
+  });
 });

@@ -138,7 +138,7 @@ export const register = async (body: unknown) => {
       },
     });
 
-    const rolNombre = data.tipo === "doctor" ? "Médico" : "Paciente";
+    const rolNombre = data.tipo === "doctor" ? "Medico" : "Paciente";
     const rol = await tx.tbl_rol.findUnique({ where: { rol_nombre: rolNombre } });
     if (!rol) throw new Error(`Rol "${rolNombre}" no encontrado en la base de datos`);
 

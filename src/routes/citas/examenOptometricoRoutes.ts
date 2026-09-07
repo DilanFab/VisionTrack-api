@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 
-router.use(verifyToken, authorize("Administrador", "Medico", "Médico"));
+router.use(verifyToken, authorize("Administrador", "Medico"));
 
 router.get("/", getExamenesOptometricos);
 router.post("/", createExamenOptometrico);

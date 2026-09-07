@@ -36,7 +36,7 @@ async function main() {
       const rolesData = [
         { rol_nombre: "Administrador", rol_descripcion: "Acceso total al sistema" },
         { rol_nombre: "Recepcionista", rol_descripcion: "Gestión de citas y pacientes" },
-        { rol_nombre: "Médico", rol_descripcion: "Atención médica y historias clínicas" },
+        { rol_nombre: "Medico", rol_descripcion: "Atención médica y historias clínicas" },
         { rol_nombre: "Paciente", rol_descripcion: "Portal del paciente" },
       ];
 

@@ -9,7 +9,7 @@ import {
 
 const router = Router();
 
-router.get("/", verifyToken, authorize("Administrador", "Medico", "Médico", "Recepcionista"), getPacientesCompletos);
+router.get("/", verifyToken, authorize("Administrador", "Medico", "Recepcionista"), getPacientesCompletos);
 router.post("/", verifyToken, authorize("Administrador", "Recepcionista"), createPacienteCompleto);
 router.put("/:id", verifyToken, authorize("Administrador"), updatePacienteCompleto);
 router.delete("/:id", verifyToken, authorize("Administrador"), deletePacienteCompleto);
