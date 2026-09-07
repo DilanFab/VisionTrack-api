@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
+import { listarProveedores, crearProveedor, listarCompras, crearCompra, crearAbono, crearNotaCredito } from "../../controllers/ventas/comprasController";
+const router = Router();
+router.use(verifyToken, authorize("Administrador", "Recepcionista"));
+router.get("/proveedores", listarProveedores);
+router.post("/proveedores", crearProveedor);
+router.get("/", listarCompras);
+router.post("/", crearCompra);
+router.post("/facturas/:id/abonos", crearAbono);
+router.post("/facturas/:id/notas-credito", crearNotaCredito);
+export default router;

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken, authorize } from "../../middlewares/auth";
 import {
   getProductos,
   getProductoById,
@@ -9,6 +10,8 @@ import {
 } from "../../controllers/inventario/productoController";
 
 const router = Router();
+
+router.use(verifyToken, authorize("Administrador", "Recepcionista"));
 
 router.get("/", getProductos);
 router.get("/alertas-stock", getProductosStockBajo);

@@ -49,6 +49,14 @@ model tbl_usuario {
   reset_tokens           tbl_reset_token[]
   examenes_optometricos  tbl_examen_optometrico[]
   movimientos_inventario tbl_movimiento_inventario[]
+  cajas_abiertas         tbl_caja[]                  @relation("CajaApertura")
+  cajas_cerradas         tbl_caja[]                  @relation("CajaCierre")
+  movimientos_caja       tbl_movimiento_caja[]
+  auditorias_examen      tbl_auditoria_examen[]
+  auditorias_autorizadas tbl_auditoria_examen[]      @relation("AuditoriaAutorizada")
+  compras_creadas        tbl_compra[]
+  abonos_registrados     tbl_abono_factura[]
+  notas_credito_creadas  tbl_nota_credito[]
 }
 
 model tbl_menu {
@@ -205,9 +213,10 @@ model tbl_examen_optometrico {
   examen_creado_en                  DateTime  @default(now())
   examen_actualizado_en             DateTime  @updatedAt
 
-  historia_clinica tbl_historia_clinica @relation(fields: [historia_clinica_id], references: [historia_clinica_id], onDelete: Cascade, onUpdate: Cascade)
-  cita             tbl_cita?            @relation(fields: [cita_id], references: [cita_id], onDelete: SetNull, onUpdate: Cascade)
-  examinador       tbl_usuario?         @relation(fields: [examinador_id], references: [usuario_id], onDelete: SetNull, onUpdate: Cascade)
+  historia_clinica tbl_historia_clinica   @relation(fields: [historia_clinica_id], references: [historia_clinica_id], onDelete: Cascade, onUpdate: Cascade)
+  cita             tbl_cita?              @relation(fields: [cita_id], references: [cita_id], onDelete: SetNull, onUpdate: Cascade)
+  examinador       tbl_usuario?           @relation(fields: [examinador_id], references: [usuario_id], onDelete: SetNull, onUpdate: Cascade)
+  auditorias       tbl_auditoria_examen[]
 
   @@index([historia_clinica_id])
   @@index([examinador_id])
@@ -247,21 +256,22 @@ model tbl_categoria_producto {
 }
 
 model tbl_producto {
-  producto_id              Int                        @id @default(autoincrement())
+  producto_id              Int                         @id @default(autoincrement())
   categoria_producto_id    Int
-  producto_codigo          String                     @unique @db.VarChar(50)
-  producto_nombre          String                     @db.VarChar(150)
-  producto_descripcion     String?                    @db.VarChar(500)
-  producto_precio_unitario Decimal                    @default(0.00) @db.Decimal(10, 2)
-  producto_stock_actual    Int                        @default(0)
-  producto_stock_minimo    Int                        @default(5)
-  producto_unidad_medida   String                     @db.VarChar(50)
-  producto_estado          String                     @default("A") @db.Char(1)
+  producto_codigo          String                      @unique @db.VarChar(50)
+  producto_nombre          String                      @db.VarChar(150)
+  producto_descripcion     String?                     @db.VarChar(500)
+  producto_precio_unitario Decimal                     @default(0.00) @db.Decimal(10, 2)
+  producto_stock_actual    Int                         @default(0)
+  producto_stock_minimo    Int                         @default(5)
+  producto_unidad_medida   String                      @db.VarChar(50)
+  producto_estado          String                      @default("A") @db.Char(1)
   iva_id                   Int?
-  configuracion_iva        tbl_configuracion_iva?     @relation(fields: [iva_id], references: [iva_id])
-  categoria                tbl_categoria_producto     @relation(fields: [categoria_producto_id], references: [categoria_producto_id], onDelete: Cascade)
+  configuracion_iva        tbl_configuracion_iva?      @relation(fields: [iva_id], references: [iva_id])
+  categoria                tbl_categoria_producto      @relation(fields: [categoria_producto_id], references: [categoria_producto_id], onDelete: Cascade)
   movimientos              tbl_movimiento_inventario[]
   detalles_factura         tbl_detalle_factura[]
+  detalles_compra          tbl_detalle_compra[]
 }
 
 model tbl_movimiento_inventario {
@@ -278,34 +288,39 @@ model tbl_movimiento_inventario {
 
 // Módulo de Facturación Interna
 model tbl_factura {
-  factura_id       Int                   @id @default(autoincrement())
-  cliente_id       Int                   // FK a tbl_persona
-  factura_numero   String                @unique @db.VarChar(20) // Ej: FAC-00001
-  factura_fecha    DateTime              @default(now())
-  metodo_pago      String                @default("Efectivo") @db.VarChar(50) // Efectivo, Tarjeta, Transferencia
-  subtotal_iva_0   Decimal               @default(0.00) @db.Decimal(10, 2)
-  subtotal_iva_5   Decimal               @default(0.00) @db.Decimal(10, 2)
-  subtotal_iva_8   Decimal               @default(0.00) @db.Decimal(10, 2)
-  subtotal_iva_15  Decimal               @default(0.00) @db.Decimal(10, 2)
-  iva_5            Decimal               @default(0.00) @db.Decimal(10, 2)
-  iva_8            Decimal               @default(0.00) @db.Decimal(10, 2)
-  iva_15           Decimal               @default(0.00) @db.Decimal(10, 2)
-  total            Decimal               @default(0.00) @db.Decimal(10, 2)
-  factura_notas    String?               @db.VarChar(500)
-  factura_estado   String                @default("A") @db.Char(1) // A = Activa, I = Anulada
-  factura_creada   DateTime              @default(now())
-  cliente          tbl_persona           @relation(fields: [cliente_id], references: [persona_id])
-  detalles         tbl_detalle_factura[]
+  factura_id      Int                   @id @default(autoincrement())
+  cliente_id      Int // FK a tbl_persona
+  factura_numero  String                @unique @db.VarChar(20) // Ej: FAC-00001
+  factura_fecha   DateTime              @default(now())
+  metodo_pago     String                @default("Efectivo") @db.VarChar(50) // Efectivo, Tarjeta, Transferencia
+  subtotal_iva_0  Decimal               @default(0.00) @db.Decimal(10, 2)
+  subtotal_iva_5  Decimal               @default(0.00) @db.Decimal(10, 2)
+  subtotal_iva_8  Decimal               @default(0.00) @db.Decimal(10, 2)
+  subtotal_iva_15 Decimal               @default(0.00) @db.Decimal(10, 2)
+  iva_5           Decimal               @default(0.00) @db.Decimal(10, 2)
+  iva_8           Decimal               @default(0.00) @db.Decimal(10, 2)
+  iva_15          Decimal               @default(0.00) @db.Decimal(10, 2)
+  total           Decimal               @default(0.00) @db.Decimal(10, 2)
+  factura_notas   String?               @db.VarChar(500)
+  factura_estado  String                @default("A") @db.Char(1) // A = Activa, I = Anulada
+  factura_creada  DateTime              @default(now())
+  caja_id         Int?
+  cliente         tbl_persona           @relation(fields: [cliente_id], references: [persona_id])
+  caja            tbl_caja?             @relation(fields: [caja_id], references: [caja_id], onDelete: SetNull)
+  detalles        tbl_detalle_factura[]
+  abonos          tbl_abono_factura[]
+  notas_credito   tbl_nota_credito[]
 
   @@index([factura_fecha])
   @@index([factura_estado])
   @@index([cliente_id])
+  @@index([caja_id])
 }
 
 model tbl_detalle_factura {
   detalle_id          Int           @id @default(autoincrement())
   factura_id          Int
-  producto_id         Int?          // NULL si es concepto libre (ej. "Reparación de lentes")
+  producto_id         Int? // NULL si es concepto libre (ej. "Reparación de lentes")
   detalle_concepto    String        @db.VarChar(255) // Nombre del producto o descripción manual
   detalle_cantidad    Int           @default(1)
   detalle_precio_unit Decimal       @db.Decimal(10, 2)
@@ -317,14 +332,140 @@ model tbl_detalle_factura {
   producto            tbl_producto? @relation(fields: [producto_id], references: [producto_id])
 }
 
+model tbl_proveedor {
+  proveedor_id       Int          @id @default(autoincrement())
+  proveedor_ruc      String       @unique @db.VarChar(20)
+  proveedor_nombre   String       @db.VarChar(150)
+  proveedor_telefono String?      @db.VarChar(30)
+  proveedor_correo   String?      @db.VarChar(150)
+  proveedor_estado   String       @default("A") @db.Char(1)
+  compras            tbl_compra[]
+}
+
+model tbl_compra {
+  compra_id          Int                  @id @default(autoincrement())
+  proveedor_id       Int
+  usuario_id         Int
+  compra_numero      String               @unique @db.VarChar(30)
+  compra_fecha       DateTime             @default(now())
+  compra_metodo_pago String               @default("Efectivo") @db.VarChar(50)
+  compra_subtotal    Decimal              @default(0) @db.Decimal(10, 2)
+  compra_total       Decimal              @default(0) @db.Decimal(10, 2)
+  compra_estado      String               @default("A") @db.Char(1)
+  compra_observacion String?              @db.VarChar(500)
+  proveedor          tbl_proveedor        @relation(fields: [proveedor_id], references: [proveedor_id])
+  usuario            tbl_usuario          @relation(fields: [usuario_id], references: [usuario_id])
+  detalles           tbl_detalle_compra[]
+
+  @@index([compra_fecha])
+}
+
+model tbl_detalle_compra {
+  detalle_compra_id Int          @id @default(autoincrement())
+  compra_id         Int
+  producto_id       Int
+  cantidad          Int
+  precio_unitario   Decimal      @db.Decimal(10, 2)
+  subtotal          Decimal      @db.Decimal(10, 2)
+  compra            tbl_compra   @relation(fields: [compra_id], references: [compra_id], onDelete: Cascade)
+  producto          tbl_producto @relation(fields: [producto_id], references: [producto_id])
+}
+
+model tbl_abono_factura {
+  abono_id    Int         @id @default(autoincrement())
+  factura_id  Int
+  usuario_id  Int
+  monto       Decimal     @db.Decimal(10, 2)
+  metodo_pago String      @db.VarChar(50)
+  observacion String?     @db.VarChar(500)
+  creado_en   DateTime    @default(now())
+  factura     tbl_factura @relation(fields: [factura_id], references: [factura_id], onDelete: Cascade)
+  usuario     tbl_usuario @relation(fields: [usuario_id], references: [usuario_id])
+
+  @@index([factura_id])
+}
+
+model tbl_nota_credito {
+  nota_credito_id     Int         @id @default(autoincrement())
+  factura_id          Int
+  usuario_id          Int
+  nota_credito_numero String      @unique @db.VarChar(30)
+  monto               Decimal     @db.Decimal(10, 2)
+  motivo              String      @db.VarChar(500)
+  creado_en           DateTime    @default(now())
+  factura             tbl_factura @relation(fields: [factura_id], references: [factura_id], onDelete: Cascade)
+  usuario             tbl_usuario @relation(fields: [usuario_id], references: [usuario_id])
+
+  @@index([factura_id])
+}
+
 // Módulo de Configuración Fiscal
 model tbl_configuracion_iva {
-  iva_id          Int     @id @default(autoincrement())
-  iva_porcentaje  Decimal @unique @db.Decimal(5, 2) // ej: 0.00, 5.00, 8.00, 15.00
-  iva_descripcion String  @db.VarChar(100)           // ej: "IVA 15% (General)"
-  iva_activo      Boolean @default(true)             // si está disponible para usar en facturas
-  iva_estado      String  @default("A") @db.Char(1)  // borrado lógico A/I
+  iva_id          Int            @id @default(autoincrement())
+  iva_porcentaje  Decimal        @unique @db.Decimal(5, 2) // ej: 0.00, 5.00, 8.00, 15.00
+  iva_descripcion String         @db.VarChar(100) // ej: "IVA 15% (General)"
+  iva_activo      Boolean        @default(true) // si está disponible para usar en facturas
+  iva_estado      String         @default("A") @db.Char(1) // borrado lógico A/I
   productos       tbl_producto[]
+}
+
+// Control de caja y trazabilidad de operaciones
+model tbl_caja {
+  caja_id                  Int       @id @default(autoincrement())
+  usuario_apertura_id      Int
+  usuario_cierre_id        Int?
+  caja_fecha_apertura      DateTime  @default(now())
+  caja_fecha_cierre        DateTime?
+  caja_monto_inicial       Decimal   @db.Decimal(10, 2)
+  caja_total_efectivo      Decimal   @default(0) @db.Decimal(10, 2)
+  caja_total_tarjeta       Decimal   @default(0) @db.Decimal(10, 2)
+  caja_total_transferencia Decimal   @default(0) @db.Decimal(10, 2)
+  caja_total_ventas        Decimal   @default(0) @db.Decimal(10, 2)
+  caja_monto_vueltos       Decimal   @default(0) @db.Decimal(10, 2)
+  caja_monto_banco         Decimal   @default(0) @db.Decimal(10, 2)
+  caja_efectivo_contado    Decimal?  @db.Decimal(10, 2)
+  caja_diferencia          Decimal?  @db.Decimal(10, 2)
+  caja_observacion         String?   @db.VarChar(500)
+  caja_estado              String    @default("ABIERTA") @db.VarChar(20)
+
+  usuario_apertura tbl_usuario           @relation("CajaApertura", fields: [usuario_apertura_id], references: [usuario_id])
+  usuario_cierre   tbl_usuario?          @relation("CajaCierre", fields: [usuario_cierre_id], references: [usuario_id])
+  movimientos      tbl_movimiento_caja[]
+  facturas         tbl_factura[]
+
+  @@index([caja_estado])
+  @@index([caja_fecha_apertura])
+}
+
+model tbl_movimiento_caja {
+  movimiento_caja_id Int      @id @default(autoincrement())
+  caja_id            Int
+  usuario_id         Int
+  tipo               String   @db.VarChar(30)
+  monto              Decimal  @db.Decimal(10, 2)
+  metodo_pago        String?  @db.VarChar(30)
+  observacion        String?  @db.VarChar(500)
+  creado_en          DateTime @default(now())
+
+  caja    tbl_caja    @relation(fields: [caja_id], references: [caja_id], onDelete: Cascade)
+  usuario tbl_usuario @relation(fields: [usuario_id], references: [usuario_id])
+
+  @@index([caja_id])
+}
+
+model tbl_auditoria_examen {
+  auditoria_examen_id Int      @id @default(autoincrement())
+  examen_id           Int
+  usuario_id          Int
+  autorizado_por_id   Int?
+  motivo              String   @db.VarChar(500)
+  creado_en           DateTime @default(now())
+
+  examen         tbl_examen_optometrico @relation(fields: [examen_id], references: [examen_optometrico_id], onDelete: Cascade)
+  usuario        tbl_usuario            @relation(fields: [usuario_id], references: [usuario_id])
+  autorizado_por tbl_usuario?           @relation("AuditoriaAutorizada", fields: [autorizado_por_id], references: [usuario_id])
+
+  @@index([examen_id])
 }
 
 enum enum_dias {
